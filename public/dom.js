@@ -20,20 +20,31 @@ const updateTable = (resp) => {
     }
 }
 
-const updateQuestion = (resp) => {
+const updatePlayerCount = (resp) => {
+    document.getElementById('player-count').innerHTML = `Players Online: ${resp.data.length}`
+}
+
+const questionDOM = (question) => {
     const element = document.getElementById('question')
     element.innerHTML = ''
-    let questionString;
+    element.appendChild(document.createTextNode('What does '))
+    var span = document.createElement('SPAN')
+    span.id = 'question-span'
+    span.appendChild(document.createTextNode(question))
+    element.appendChild(span)
+    element.appendChild(document.createTextNode(' equal?'))
+}
+
+const updateQuestion = (resp) => {
     if (resp.data.type === 'add') {
-        questionString = `What does ${resp.data.num1} + ${resp.data.num2} equal?`
+        questionDOM(`${resp.data.num1} + ${resp.data.num2}`)
     } else if (resp.data.type === 'sub') {
-        questionString = `What does ${resp.data.num1} - ${resp.data.num2} equal?`
+        questionDOM(`${resp.data.num1} - ${resp.data.num2}`)
         element.innerHTML = 'sub'
     } else if (resp.data.type === 'mult') {
-        questionString = `What does ${resp.data.num1} * ${resp.data.num2} equal?`
+        questionDOM(`${resp.data.num1} * ${resp.data.num2}`)
         element.innerHTML = 'mult'
     } else if (resp.data.type === 'div') {
-        questionString = `Whats does ${resp.data.num1} / ${resp.data.num2} equal?`
+        questionDOM(`${resp.data.num1} / ${resp.data.num2}`)
     }
-    element.innerHTML = questionString
 }

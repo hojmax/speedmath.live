@@ -39,7 +39,7 @@ const sendPlayerData = () => {
 }
 
 const sendMathQuestion = () => {
-  currentQuestion = mathQuestionGenerator()
+  currentQuestion = mathQuestionGenerator(2)
   sendToAll({
     type: 'mathQuestion',
     data: {

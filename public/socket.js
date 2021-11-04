@@ -9,6 +9,7 @@ socket.addEventListener('message', (event) => {
     if (resp.type === 'playerData') {
         // Clear Table
         updateTable(resp)
+        updatePlayerCount(resp)
     } else if (resp.type === 'mathQuestion') {
         updateQuestion(resp)
     }

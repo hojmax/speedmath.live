@@ -1,9 +1,8 @@
-const mathQuestionGenerator = () => {
+const mathQuestionGenerator = (difficulty) => {
     const types = ['add', 'sub', 'mult', 'div']
     const type = types[Math.floor(Math.random() * types.length)]
-    const difficulty = 1
-    let num1 = 1 + Math.floor(Math.random() * Math.pow(10, difficulty))
-    let num2 = 1 + Math.floor(Math.random() * Math.pow(10, difficulty))
+    let num1 = 1 + Math.floor(Math.random() * 10 * difficulty)
+    let num2 = 1 + Math.floor(Math.random() * 10 * difficulty)
     let answer;
     if (type === 'add') {
         answer = num1 + num2
