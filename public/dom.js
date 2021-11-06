@@ -1,27 +1,37 @@
-const addRow = (user, score, header = false) => {
+const addRow = (user, score, isClient) => {
     const element = document.getElementById('player-table').children[0]
     var row = document.createElement('TR')
-    var col1 = document.createElement(header ? 'TH' : 'TD')
-    var col2 = document.createElement(header ? 'TH' : 'TD')
-    col1.appendChild(document.createTextNode(user))
+    var col1 = document.createElement('TD')
+    var col2 = document.createElement('TD')
+    if (isClient) {
+        var caret = document.createElement('I')
+        caret.className = 'fas fa-angle-double-right'
+        caret.id = 'client-indicator'
+        col1.appendChild(caret)
+    }
+    col1.appendChild(document.createTextNode((isClient ? ' ' : '') + user))
     col2.appendChild(document.createTextNode(score))
     row.appendChild(col1)
     row.appendChild(col2)
     element.appendChild(row)
 }
 
-const clearTable = () => document.getElementById('player-table').children[0].innerHTML = ''
-
-const updateTable = (resp) => {
-    clearTable()
-    addRow('User', 'Score', header = true)
-    for (const e of resp.data) {
-        addRow(e.name, e.score)
+const clearTable = () => {
+    const element = document.getElementById('player-table').children[0]
+    while (element.childNodes.length > 1) {
+        element.removeChild(element.lastChild)
     }
 }
 
-const updatePlayerCount = (resp) => {
-    document.getElementById('player-count').innerHTML = `Players Online: ${resp.data.length}`
+const updateTable = (players) => {
+    clearTable()
+    for (const e of players) {
+        addRow(e.name, e.score, id === e.id)
+    }
+}
+
+const updatePlayerCount = (players) => {
+    document.getElementById('player-count').innerHTML = `Players Online: ${players.length}`
 }
 
 const questionDOM = (question) => {
@@ -35,16 +45,27 @@ const questionDOM = (question) => {
     element.appendChild(document.createTextNode(' equal?'))
 }
 
-const updateQuestion = (resp) => {
-    if (resp.data.type === 'add') {
-        questionDOM(`${resp.data.num1} + ${resp.data.num2}`)
-    } else if (resp.data.type === 'sub') {
-        questionDOM(`${resp.data.num1} - ${resp.data.num2}`)
-        element.innerHTML = 'sub'
-    } else if (resp.data.type === 'mult') {
-        questionDOM(`${resp.data.num1} * ${resp.data.num2}`)
-        element.innerHTML = 'mult'
-    } else if (resp.data.type === 'div') {
-        questionDOM(`${resp.data.num1} / ${resp.data.num2}`)
+const setTimer = (data) => {
+    const element = document.getElementById('loading-bar')
+    element.style.animation = 'none'
+    element.offsetHeight
+    element.style.animation = `slide ${data.time}s linear`
+}
+
+const updateQuestion = (data) => {
+    if (data.type === 'add') {
+        questionDOM(`${data.num1} + ${data.num2}`)
+    } else if (data.type === 'sub') {
+        questionDOM(`${data.num1} - ${data.num2}`)
+    } else if (data.type === 'mult') {
+        questionDOM(`${data.num1} × ${data.num2}`)
+    } else if (data.type === 'div') {
+        questionDOM(`${data.num1} / ${data.num2}`)
     }
 }
+
+document.getElementById('input').addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+        tryAnswer(event.target.value)
+    }
+})

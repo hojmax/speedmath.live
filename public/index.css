@@ -1,17 +1,19 @@
 :root {
-    --black: #090910;
-    --green: #3E7C17;
-    --light-grey: #f2f2f2;
-    --grey: #dedede;
+    --main1: #215eba;
+    --main2: #323232;
+    --main3: #a4a4a4;
+    --main4: #919191;
+    --bright-green: #40ca34;
     --border-radius: 5px;
     --small-padding: 5px;
     --large-padding: 20px;
 }
 
 body {
+    background-color: var(--main2);
     margin: 0px;
     padding: 0px var(--large-padding) 0px var(--large-padding);
-    color: var(--black);
+    color: white;
     font-family: 'Roboto', sans-serif;
 }
 
@@ -29,18 +31,111 @@ body {
 
 .right-container {
     width: 30%;
-    min-width: 200px;
+    min-width: 250px;
     height: 100vh;
     display: flex;
     align-items: center;
     flex-direction: column;
 }
 
+#question {
+    font-size: 40px;
+}
+
 #question-span {
-    background-color: var(--grey);
+    background-color: var(--main1);
+    border-radius: var(--border-radius);
     padding: 0px var(--small-padding) 0px var(--small-padding);
 }
 
+#client-indicator {
+    color: var(--main1);
+}
+
+#input:focus {
+    outline: none;
+}
+
 #input {
+    font-family: 'Roboto', sans-serif;
+    width: 95px;
+    margin-top: 10px;
+    border-radius: var(--border-radius);
+    font-size: 40px;
+    border: none;
+}
+
+.online-dot {
+    width: 10px;
+    height: 10px;
+    margin-right: var(--small-padding);
+    background-color: var(--bright-green);
+    border-radius: 50%;
+}
+
+.player-count-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.loader {
+    display: flex;
+}
+
+.loading-dot {
+    margin: var(--small-padding);
+    width: 25px;
+    height: 25px;
+    background-color: white;
+    border-radius: 50%;
+}
+
+.loading-dot:nth-child(1) {
+    animation: upDown 0.7s ease-in-out 0s alternate infinite;
+}
+
+.loading-dot:nth-child(2) {
+    animation: upDown 0.7s ease-in-out 0.1s alternate infinite;
+}
+
+.loading-dot:nth-child(3) {
+    animation: upDown 0.7s ease-in-out 0.2s alternate infinite;
+}
+
+@keyframes upDown {
+    0% {
+        transform: translatey(0px);
+    }
+
+    50% {
+        transform: translatey(-15px);
+    }
+
+    100% {
+        transform: translatey(15px);
+    }
+}
+
+#loading-bar-container {
     width: 200px;
+    height: 20px;
+    border: 1px solid var(--main1);
+    margin-top: 30px;
+}
+
+#loading-bar {
+    width: 0%;
+    height: 100%;
+    background-color: var(--main1);
+}
+
+
+@keyframes slide {
+    0% {
+        width: 0%;
+    }
+    100% {
+        width: 100%;
+    }
 }

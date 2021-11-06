@@ -73,7 +73,6 @@ const adjectives = [
     'Ugly',
     'White',
     'Wicked',
-    'Wide-Eyed',
     'Wild',
     'Witty',
     'Yellow',

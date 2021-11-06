@@ -1,9 +1,14 @@
 #player-table tr:nth-child(even) {
-    background-color: var(--light-grey);
+    background-color: var(--main3);
+}
+
+#player-table tr:nth-child(odd) {
+    background-color: var(--main4);
 }
 
 #player-table th {
-    background-color: var(--green);
+    color: white;
+    background-color: var(--main1);
 }
 
 #player-table tr:last-child td:first-child {
@@ -27,7 +32,6 @@
     border-collapse: collapse;
     width: 100%;
 }
-
 
 #player-table td,
 #player-table th {

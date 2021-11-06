@@ -1,16 +1,29 @@
 const socket = new WebSocket('ws://localhost:3000');
+let id;
 
-socket.addEventListener('open', (event) => {
-    console.log('Connected to WS Server')
-});
+const tryAnswer = (answer) => {
+    socket.send(JSON.stringify({
+        type: 'answer',
+        answer: answer
+    }))
+}
 
 socket.addEventListener('message', (event) => {
     const resp = JSON.parse(event.data)
-    if (resp.type === 'playerData') {
-        // Clear Table
-        updateTable(resp)
-        updatePlayerCount(resp)
-    } else if (resp.type === 'mathQuestion') {
-        updateQuestion(resp)
+    switch (resp.type) {
+        case 'playerData':
+            updateTable(resp.data)
+            updatePlayerCount(resp.data)
+            break;
+        case 'mathQuestion':
+            setTimer(resp.data)
+            updateQuestion(resp.data)
+            break;
+        case 'id':
+            id = resp.data.id
+            break;
+        case 'answer':
+            console.log(resp.data)
+            break;
     }
 });
