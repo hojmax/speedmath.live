@@ -20,6 +20,9 @@ socket.addEventListener('message', (event) => {
     const resp = JSON.parse(event.data)
     switch (resp.type) {
         case 'playerData':
+            if (playerData) {
+                animateTable()
+            }
             playerData = resp.data
             updateTable(playerData)
             updatePlayerCount(playerData)

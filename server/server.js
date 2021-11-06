@@ -7,7 +7,7 @@ const WebSocket = require('ws')
 const { v4: uuidv4 } = require('uuid')
 const wss = new WebSocket.Server({ server: server })
 const difficulty = 2
-const questionDuration = 7;
+const questionDuration = 8;
 let currentQuestion;
 let questionTime;
 
@@ -111,13 +111,11 @@ const handleAnswers = (ws, msg) => {
 }
 
 wss.on('connection', (ws) => {
-  printClientCount()
   configureNewClient(ws)
   sendId(ws)
   sendPlayerData()
   ws.on('message', (msg) => handleAnswers(ws, msg))
   ws.on('close', () => {
-    printClientCount()
     sendPlayerData()
   })
 })

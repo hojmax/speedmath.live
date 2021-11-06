@@ -32,6 +32,13 @@ const clearTable = () => {
     }
 }
 
+const animateTable = () => {
+    const element = document.getElementById('player-table')
+    element.style.animation = 'none'
+    element.offsetHeight
+    element.style.animation = `shake 0.5s ease`
+}
+
 const updateTable = (players) => {
     clearTable()
     for (let i = 0; i < players.length; i++) {
