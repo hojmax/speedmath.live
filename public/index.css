@@ -3,7 +3,8 @@
     --main2: #323232;
     --main3: #a4a4a4;
     --main4: #919191;
-    --bright-green: #40ca34;
+    --green: #66ff58;
+    --red: #ffd5d1;
     --border-radius: 5px;
     --small-padding: 5px;
     --large-padding: 20px;
@@ -69,7 +70,7 @@ body {
     width: 10px;
     height: 10px;
     margin-right: var(--small-padding);
-    background-color: var(--bright-green);
+    background-color: var(--green);
     border-radius: 50%;
 }
 
@@ -121,7 +122,7 @@ body {
     width: 200px;
     height: 20px;
     border: 1px solid var(--main1);
-    margin-top: 30px;
+    margin-top: 35px;
 }
 
 #loading-bar {
@@ -130,12 +131,40 @@ body {
     background-color: var(--main1);
 }
 
+.delta-score-span {
+    color: var(--green);
+}
 
 @keyframes slide {
     0% {
         width: 0%;
     }
+
     100% {
         width: 100%;
+    }
+}
+
+@keyframes shake-animation {
+    0% {
+        transform: translate(0, 0);
+        background-color: var(--red);
+    }
+
+    25% {
+        transform: translate(5px, 0)
+    }
+
+    50% {
+        transform: translate(-5px, 0)
+    }
+
+    75% {
+        transform: translate(5px, 0)
+    }
+
+    100% {
+        transform: translate(0, 0);
+        background-color: white;
     }
 }

@@ -1,4 +1,4 @@
-const addRow = (user, score, isClient) => {
+const addRow = (user, score, deltaScore, isClient) => {
     const element = document.getElementById('player-table').children[0]
     var row = document.createElement('TR')
     var col1 = document.createElement('TD')
@@ -11,6 +11,12 @@ const addRow = (user, score, isClient) => {
     }
     col1.appendChild(document.createTextNode((isClient ? ' ' : '') + user))
     col2.appendChild(document.createTextNode(score))
+    if (deltaScore != 0) {
+        var span = document.createElement('SPAN')
+        span.className = 'delta-score-span'
+        span.appendChild(document.createTextNode(` +${deltaScore}`))
+        col2.appendChild(span)
+    }
     row.appendChild(col1)
     row.appendChild(col2)
     element.appendChild(row)
@@ -26,7 +32,7 @@ const clearTable = () => {
 const updateTable = (players) => {
     clearTable()
     for (const e of players) {
-        addRow(e.name, e.score, id === e.id)
+        addRow(e.name, e.score, e.deltaScore, id === e.id)
     }
 }
 
@@ -52,6 +58,18 @@ const setTimer = (data) => {
     element.style.animation = `slide ${data.time}s linear`
 }
 
+const handleAnswer = (data) => {
+    const element = document.getElementById('input')
+    answered = true
+    if (data.correct) {
+        element.value = ''
+    } else {
+        element.style.animation = 'none'
+        element.offsetHeight
+        element.style.animation = 'incorrect 0.5s ease'
+    }
+}
+
 const updateQuestion = (data) => {
     if (data.type === 'add') {
         questionDOM(`${data.num1} + ${data.num2}`)
@@ -66,6 +84,6 @@ const updateQuestion = (data) => {
 
 document.getElementById('input').addEventListener('keydown', (event) => {
     if (event.key === 'Enter') {
-        tryAnswer(event.target.value)
+        sendAnswer(event.target.value)
     }
 })

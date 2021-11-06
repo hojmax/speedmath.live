@@ -6,7 +6,7 @@ const mathQuestionGenerator = require('./math.js')
 const WebSocket = require('ws')
 const { v4: uuidv4 } = require('uuid')
 const wss = new WebSocket.Server({ server: server })
-const difficulty = 2.5
+const difficulty = 2
 const questionDuration = 5;
 let currentQuestion;
 let questionTime;
@@ -26,7 +26,7 @@ const configureNewClient = (ws) => {
   ws.name = nameGenerator()
   ws.score = 0
   ws.answered = false
-  ws.deltaTime = 0
+  ws.deltaScore = 0
 }
 
 const sendPlayerData = () => {
@@ -35,7 +35,7 @@ const sendPlayerData = () => {
       id: e.id,
       name: e.name,
       score: e.score,
-      deltaTime: e.deltaTime
+      deltaScore: e.deltaScore
     }
   })
   allPlayerData.sort((a, b) => b.score - a.score)
@@ -49,7 +49,7 @@ const resetAnswers = () => {
   wss.clients.forEach((client) => {
     if (client.readyState === WebSocket.OPEN) {
       client.answered = false;
-      client.deltaTime = 0;
+      client.deltaScore = 0;
     }
   })
 }
@@ -77,24 +77,35 @@ const sendId = (ws) => {
   }))
 }
 
+const handleCorrectAnswer = (ws) => {
+  ws.answered = true
+  ws.deltaScore = Math.ceil(1000 - (Date.now() - questionTime) / questionDuration)
+  ws.score += ws.deltaScore
+  ws.send(JSON.stringify({
+    type: 'answer',
+    data: {
+      correct: true
+    }
+  }))
+  sendPlayerData()
+}
+
+const handleWrongAnswer = (ws) => {
+  ws.send(JSON.stringify({
+    type: 'answer',
+    data: {
+      correct: false
+    }
+  }))
+}
+
 const handleAnswers = (ws, msg) => {
-  const parsed = JSON.parse(msg)
   if (currentQuestion && !ws.answered) {
+    const parsed = JSON.parse(msg)
     if (parsed.answer == currentQuestion.answer) {
-      ws.answered = true
-      ws.send(JSON.stringify({
-        type: 'answer',
-        data: {
-          status: 'correct'
-        }
-      }))
+      handleCorrectAnswer(ws)
     } else {
-      ws.send(JSON.stringify({
-        type: 'answer',
-        data: {
-          status: 'wrong'
-        }
-      }))
+      handleWrongAnswer(ws)
     }
   }
 }
