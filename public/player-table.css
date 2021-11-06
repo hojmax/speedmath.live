@@ -29,8 +29,10 @@
 }
 
 #player-table {
+    margin-top: 20px;
     border-collapse: collapse;
     width: 100%;
+    min-width: 280px;
 }
 
 #player-table td,

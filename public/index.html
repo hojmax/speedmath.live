@@ -26,8 +26,8 @@
                     <div class="loading-dot"></div>
                 </div>
             </h1>
-            <input id="input" maxlength="4" autofocus="autofocus" onfocus="this.select()">
-            <div id="loading-bar-container">
+            <input id="input" maxlength="4" autofocus="autofocus" onfocus="this.select()" >
+            <div id="loading-bar-container" style="display: none;">
                 <div id="loading-bar"></div>
             </div>
         </div>
@@ -38,6 +38,7 @@
             </div>
             <table id="player-table">
                 <tr>
+                    <th></th>
                     <th><i class="fas fa-paw"></i> Player</th>
                     <th><i class="fas fa-star"></i> Score</th>
                 </tr>

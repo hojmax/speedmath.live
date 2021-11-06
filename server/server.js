@@ -7,7 +7,7 @@ const WebSocket = require('ws')
 const { v4: uuidv4 } = require('uuid')
 const wss = new WebSocket.Server({ server: server })
 const difficulty = 2
-const questionDuration = 5;
+const questionDuration = 7;
 let currentQuestion;
 let questionTime;
 

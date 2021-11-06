@@ -66,7 +66,6 @@ const adjectives = [
     'Smiling',
     'Sparkling',
     'Strange',
-    'Stupid',
     'Talented',
     'Tasty',
     'Tough',

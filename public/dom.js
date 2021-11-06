@@ -1,6 +1,7 @@
-const addRow = (user, score, deltaScore, isClient) => {
+const addRow = (user, score, deltaScore, index, isClient) => {
     const element = document.getElementById('player-table').children[0]
     var row = document.createElement('TR')
+    var col0 = document.createElement('TD')
     var col1 = document.createElement('TD')
     var col2 = document.createElement('TD')
     if (isClient) {
@@ -9,6 +10,7 @@ const addRow = (user, score, deltaScore, isClient) => {
         caret.id = 'client-indicator'
         col1.appendChild(caret)
     }
+    col0.appendChild(document.createTextNode(`${index + 1}.`))
     col1.appendChild(document.createTextNode((isClient ? ' ' : '') + user))
     col2.appendChild(document.createTextNode(score))
     if (deltaScore != 0) {
@@ -17,6 +19,7 @@ const addRow = (user, score, deltaScore, isClient) => {
         span.appendChild(document.createTextNode(` +${deltaScore}`))
         col2.appendChild(span)
     }
+    row.appendChild(col0)
     row.appendChild(col1)
     row.appendChild(col2)
     element.appendChild(row)
@@ -31,8 +34,9 @@ const clearTable = () => {
 
 const updateTable = (players) => {
     clearTable()
-    for (const e of players) {
-        addRow(e.name, e.score, e.deltaScore, id === e.id)
+    for (let i = 0; i < players.length; i++) {
+        const e = players[i]
+        addRow(e.name, e.score, e.deltaScore, i, id === e.id)
     }
 }
 
@@ -52,21 +56,34 @@ const questionDOM = (question) => {
 }
 
 const setTimer = (data) => {
+    document.getElementById('loading-bar-container').style.display = 'block'
     const element = document.getElementById('loading-bar')
     element.style.animation = 'none'
     element.offsetHeight
     element.style.animation = `slide ${data.time}s linear`
 }
 
-const handleAnswer = (data) => {
+const handleIncorrect = () => {
     const element = document.getElementById('input')
+    element.style.animation = 'none'
+    element.offsetHeight
+    element.style.animation = 'incorrect 0.5s ease'
+}
+
+const handleCorrect = () => {
+    const element = document.getElementById('input')
+    element.style.animation = 'none'
+    element.offsetHeight
+    element.style.animation = 'correct 0.5s ease'
+    element.value = ''
+}
+
+const handleAnswer = (data) => {
     answered = true
     if (data.correct) {
-        element.value = ''
+        handleCorrect()
     } else {
-        element.style.animation = 'none'
-        element.offsetHeight
-        element.style.animation = 'incorrect 0.5s ease'
+        handleIncorrect()
     }
 }
 
