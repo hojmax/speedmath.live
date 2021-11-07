@@ -8,21 +8,21 @@ const addRow = (user, score, deltaScore, index, isClient) => {
         var caret = document.createElement('I')
         caret.className = 'fas fa-angle-double-right'
         caret.id = 'client-indicator'
-        col1.appendChild(caret)
+        col1.append(caret)
     }
-    col0.appendChild(document.createTextNode(`${index + 1}.`))
-    col1.appendChild(document.createTextNode((isClient ? ' ' : '') + user))
-    col2.appendChild(document.createTextNode(score))
+    col0.append(`${index + 1}.`)
+    col1.append((isClient ? ' ' : '') + user)
+    col2.append(score)
     if (deltaScore != 0) {
         var span = document.createElement('SPAN')
         span.className = 'delta-score-span'
-        span.appendChild(document.createTextNode(` +${deltaScore}`))
-        col2.appendChild(span)
+        span.append(` +${deltaScore}`)
+        col2.append(span)
     }
-    row.appendChild(col0)
-    row.appendChild(col1)
-    row.appendChild(col2)
-    element.appendChild(row)
+    row.append(col0)
+    row.append(col1)
+    row.append(col2)
+    element.append(row)
 }
 
 const clearTable = () => {
@@ -54,12 +54,29 @@ const updatePlayerCount = (players) => {
 const questionDOM = (question) => {
     const element = document.getElementById('question')
     element.innerHTML = ''
-    element.appendChild(document.createTextNode('What does '))
+    element.append('What does ')
     var span = document.createElement('SPAN')
     span.id = 'question-span'
-    span.appendChild(document.createTextNode(question))
-    element.appendChild(span)
-    element.appendChild(document.createTextNode(' equal?'))
+    span.append(question)
+    element.append(span)
+    element.append(' equal?')
+}
+
+const updateRoundCounter = (data) => {
+    const element = document.getElementById('round-counter')
+    element.style.display = 'block'
+    element.innerText = `Round ${data.round}/${data.totalRounds}`
+}
+
+const handlePodium = (data) => {
+    setTimer(data)
+    const element = document.getElementById('round-counter')
+    element.innerText = `Podium`
+}
+
+const serverErrorDOM = (error) => {
+    const element = document.getElementById('question')
+    element.innerText = 'Connection lost... Reload or try again later.'
 }
 
 const setTimer = (data) => {
@@ -86,7 +103,6 @@ const handleCorrect = () => {
 }
 
 const handleAnswer = (data) => {
-    answered = true
     if (data.correct) {
         handleCorrect()
     } else {

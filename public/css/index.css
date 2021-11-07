@@ -6,6 +6,7 @@
     --green: #66ff58;
     --green2: #a8ffa0;
     --red: #ffc0bb;
+    --gold: #ffd700;
     --border-radius: 5px;
     --small-padding: 5px;
     --large-padding: 20px;
@@ -124,6 +125,10 @@ body {
     }
 }
 
+#round-counter {
+    margin: 30px 0px 0px 0px;
+}
+
 #loading-bar-container {
     width: 200px;
     height: 20px;
@@ -142,6 +147,7 @@ body {
     color: var(--green);
 }
 
+
 @keyframes slide {
     0% {
         width: 0%;
@@ -155,23 +161,19 @@ body {
 
 @keyframes shake {
     0% {
-        transform: translate(0, 0);
+        transform: scale(1);
     }
 
-    25% {
-        transform: translate(5px, 0)
+    33% {
+        transform: scale(1.05);
     }
 
-    50% {
-        transform: translate(-5px, 0)
-    }
-
-    75% {
-        transform: translate(5px, 0)
+    66% {
+        transform: scale(0.95);
     }
 
     100% {
-        transform: translate(0, 0);
+        transform: scale(1);
     }
 }
 

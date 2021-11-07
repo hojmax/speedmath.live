@@ -7,16 +7,22 @@ const WebSocket = require('ws')
 const { v4: uuidv4 } = require('uuid')
 const wss = new WebSocket.Server({ server: server })
 const difficulty = 2
-const questionDuration = 8;
-let currentQuestion;
-let questionTime;
+const questionDuration = 5
+const podiumDuration = 10
+const totalRounds = 3
+const startUpTime = 3
+let questionTimer
+let gameRunning = false
+let roundCounter = 0
+let currentQuestion
+let questionTime
 
 const printClientCount = () => console.log('Clients connected:', wss.clients.size)
 
 const sendToAll = (data) => {
   wss.clients.forEach((client) => {
     if (client.readyState === WebSocket.OPEN) {
-      client.send(JSON.stringify(data));
+      client.send(JSON.stringify(data))
     }
   })
 }
@@ -45,11 +51,21 @@ const sendPlayerData = () => {
   })
 }
 
-const resetAnswers = () => {
+const resetGame = () => {
   wss.clients.forEach((client) => {
     if (client.readyState === WebSocket.OPEN) {
-      client.answered = false;
-      client.deltaScore = 0;
+      client.answered = false
+      client.deltaScore = 0
+      client.score = 0
+    }
+  })
+}
+
+const resetRound = () => {
+  wss.clients.forEach((client) => {
+    if (client.readyState === WebSocket.OPEN) {
+      client.answered = false
+      client.deltaScore = 0
     }
   })
 }
@@ -63,8 +79,29 @@ const sendMathQuestion = () => {
       num1: currentQuestion.num1,
       num2: currentQuestion.num2,
       type: currentQuestion.type,
-      time: questionDuration
+      time: questionDuration,
+      round: roundCounter,
+      totalRounds: totalRounds,
     }
+  })
+}
+
+const sendPodium = () => {
+  const allPlayerData = [...wss.clients.values()].map(e => {
+    return {
+      id: e.id,
+      name: e.name,
+      score: e.score,
+    }
+  })
+  allPlayerData.sort((a, b) => b.score - a.score)
+  const podium = allPlayerData.splice(0, 3)
+  sendToAll({
+    type: 'podium',
+    data: {
+      players: podium,
+      time: podiumDuration
+    },
   })
 }
 
@@ -99,8 +136,27 @@ const handleWrongAnswer = (ws) => {
   }))
 }
 
+const stopGame = () => {
+  gameRunning = false
+  clearInterval(questionTimer)
+  roundCounter = 0
+  sendPodium()
+  resetGame()
+}
+
+const handleRounds = () => {
+  roundCounter += 1
+  if (roundCounter > totalRounds) {
+    stopGame()
+    setTimeout(startGame, podiumDuration * 1000)
+  } else {
+    resetRound()
+    sendMathQuestion()
+  }
+}
+
 const handleAnswers = (ws, msg) => {
-  if (currentQuestion && !ws.answered) {
+  if (gameRunning && currentQuestion && !ws.answered) {
     const parsed = JSON.parse(msg)
     if (parsed.answer == currentQuestion.answer) {
       handleCorrectAnswer(ws)
@@ -120,9 +176,14 @@ wss.on('connection', (ws) => {
   })
 })
 
-setInterval(() => {
-  resetAnswers()
-  sendMathQuestion()
-}, questionDuration * 1000)
+const startGame = () => {
+  gameRunning = true
+  sendPlayerData()
+  handleRounds()
+  questionTimer = setInterval(handleRounds, questionDuration * 1000)
+}
+
+setTimeout(startGame, startUpTime * 1000)
+
 
 server.listen(3000, () => console.log(`Lisening on port :3000`))

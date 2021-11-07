@@ -5,10 +5,12 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="index.css">
-    <link rel="stylesheet" href="player-table.css">
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/player-table.css">
+    <link rel="stylesheet" href="css/podium.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
     <link
         href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
         rel="stylesheet">
@@ -19,15 +21,29 @@
 <body>
     <div class="main-wrapper">
         <div class="left-container">
-            <h1 id="question">
-                <div class="loader">
-                    <div class="loading-dot"></div>
-                    <div class="loading-dot"></div>
-                    <div class="loading-dot"></div>
+            <div id="podium-container">
+                <div id="second-place" class="podium">
                 </div>
-            </h1>
-            <input id="input" maxlength="4" autofocus="autofocus" onfocus="this.select()">
-            <div id="loading-bar-container" style="display: none;">
+                <div id="first-place" class="podium">
+                    <i class="fas fa-medal first-place medal"></i>
+                    <div class="podium-name">CalmShark</div>
+                    <div class="podium-score"><strong>10000</strong> points</div>
+                    <div class="podium-score">2 out of 3</div>
+                </div>
+                <div id="third-place" class="podium"></div>
+            </div>
+            <h2 id="round-counter" style="display: none">Round 1/10</h2>
+            <div id="game-container" style="display: none">
+                <h1 id="question">
+                    <div class="loader">
+                        <div class="loading-dot"></div>
+                        <div class="loading-dot"></div>
+                        <div class="loading-dot"></div>
+                    </div>
+                </h1>
+                <input id="input" maxlength="4" autofocus="autofocus" onfocus="this.select()">
+            </div>
+            <div id="loading-bar-container" style="display: none">
                 <div id="loading-bar"></div>
             </div>
         </div>
@@ -48,5 +64,18 @@
 </body>
 <script src="dom.js"></script>
 <script src="socket.js"></script>
+<script>
+    var rect = document.getElementById("first-place").getBoundingClientRect();
+    setTimeout(() => confetti({
+        particleCount: 80,
+        startVelocity: 20,
+        spread: 360,
+        zIndex: 0,
+        origin: {
+            y: (rect.top - (rect.top - rect.bottom) / 2) / window.innerHeight,
+            x: (rect.left - (rect.left - rect.right) / 2) / window.innerWidth
+        }
+    }), 2000)
+</script>
 
 </html>

@@ -4,8 +4,7 @@ const getNumber = (difficulty) => {
 
 const mathQuestionGenerator = (difficulty) => {
     const types = ['add', 'sub', 'mult', 'div']
-    // const type = types[Math.floor(Math.random() * types.length)]
-    const type = 'div'
+    const type = types[Math.floor(Math.random() * types.length)]
     let answer;
     let num1;
     let num2;

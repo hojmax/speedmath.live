@@ -1,0 +1,93 @@
+#podium-container {
+    margin-top: 20px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    width: 400px;
+    height: 350px;
+}
+
+#first-place {
+    height: 350px;
+    animation: podium-first 1s cubic-bezier(.83, .08, .56, 1.35) 1s;
+    animation-fill-mode: forwards;
+}
+
+#second-place {
+    animation: podium-second 1s cubic-bezier(.83, .08, .56, 1.35) 0.5s;
+    animation-fill-mode: forwards;
+}
+
+#third-place {
+    animation: podium-third 1s cubic-bezier(.83, .08, .56, 1.35) 0s;
+    animation-fill-mode: forwards;
+}
+
+.podium-name {
+    font-weight: bold;
+    margin-top: 13px;
+}
+
+.podium-score {
+    margin-top: 10px;
+}
+
+.podium {
+    width: 150px;
+    background-color: var(--main1);
+    overflow-y: hidden;
+    border-radius: var(--border-radius);
+    opacity: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 10;
+    margin: 0px 15px 0px 15px;
+}
+
+.first-place {
+    color: var(--gold)
+}
+
+.medal {
+    font-size: 50px;
+}
+
+
+@keyframes podium-first {
+    0% {
+        opacity: 0;
+        height: 0px
+    }
+
+    100% {
+        opacity: 1;
+        height: 350px
+    }
+}
+
+
+@keyframes podium-second {
+    0% {
+        opacity: 0;
+        height: 0px
+    }
+
+    100% {
+        opacity: 1;
+        height: 250px
+    }
+}
+
+
+@keyframes podium-third {
+    0% {
+        opacity: 0;
+        height: 0px
+    }
+
+    100% {
+        opacity: 1;
+        height: 150px
+    }
+}
