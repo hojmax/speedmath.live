@@ -147,29 +147,29 @@ const handleAnswer = (data) => {
 }
 
 const handleChat = (data) => {
-    // <div class="message-container">
-    //                     <div class="message-time">14:49:42</div>
-    //                     <div class="message-sender">CalmShark:</div>
-    //                     <div class="message-content">Lets gooo</div>
-    //                 </div>
     const date = new Date(data.time)
     const dateString = date.toTimeString().split(' ')[0]
     const element = document.getElementById('scroll-container')
     const messageContainer = document.createElement('div')
-    const messageTime = document.createElement('div')
-    const messageSender = document.createElement('div')
-    const messageContent = document.createElement('div')
     messageContainer.className = "message-container"
+    // Time
+    const messageTime = document.createElement('div')
     messageTime.className = "message-time"
-    messageSender.className = "message-sender"
-    messageContent.className = "message-content"
     messageTime.append(dateString)
-    messageSender.append(`${data.name}:`)
-    messageContent.append(data.message)
     messageContainer.append(messageTime)
+    // Name
+    const messageSender = document.createElement('div')
+    messageSender.className = "message-sender"
+    messageSender.append(`${data.name}:`)
     messageContainer.append(messageSender)
+    // Content
+    const messageContent = document.createElement('div')
+    messageContent.className = "message-content"
+    messageContent.append(data.message)
     messageContainer.append(messageContent)
     element.append(messageContainer)
+    var scrollDiv = document.getElementById("scroll-container");
+    scrollDiv.scrollTop = scrollDiv.scrollHeight;
 }
 
 const updateQuestion = (data) => {
