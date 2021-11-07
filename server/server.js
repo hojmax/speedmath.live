@@ -208,5 +208,6 @@ const startGame = () => {
 
 setTimeout(startGame, options.startUpTime * 1000)
 
+app.use(express.static('public'))
 
 server.listen(3000, () => console.log(`Lisening on port :3000`))
