@@ -173,7 +173,8 @@ const animals = [
 const getName = () => {
     const animal = animals[Math.floor(Math.random() * animals.length)]
     const adjective = adjectives[Math.floor(Math.random() * adjectives.length)]
-    return adjective + animal
+    const output = adjective + animal;
+    return output.length <= 15 ? output : getName()
 }
 
 module.exports = getName

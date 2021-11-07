@@ -1,12 +1,15 @@
 :root {
     --main1: #215eba;
-    --main2: #323232;
-    --main3: #a4a4a4;
-    --main4: #919191;
+    --main2: #2b2b2b;
+    --main3: #9b9b9b;
+    --main4: #888888;
+    --main5: #323232;
     --green: #66ff58;
     --green2: #a8ffa0;
     --red: #ffc0bb;
     --gold: #ffd700;
+    --silver: #c0c0c0;
+    --bronze: #df7f32;
     --border-radius: 5px;
     --small-padding: 5px;
     --large-padding: 20px;
@@ -15,7 +18,7 @@
 body {
     background-color: var(--main2);
     margin: 0px;
-    padding: 0px var(--large-padding) 0px var(--large-padding);
+    padding: 0px var(--large-padding) var(--large-padding) var(--large-padding);
     color: white;
     font-family: 'Roboto', sans-serif;
 }
@@ -26,7 +29,8 @@ body {
 }
 
 .left-container {
-    flex-grow: 4;
+    flex-grow: 1;
+    flex-basis: 70%;
     display: flex;
     align-items: center;
     flex-direction: column;
@@ -34,13 +38,21 @@ body {
 
 .right-container {
     flex-grow: 1;
+    flex-basis: 25%;
     display: flex;
     align-items: center;
     flex-direction: column;
 }
 
+#game-container {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+
 #question {
-    margin-top: 30px;
+    margin: 30px 0px 0px 0px;
     font-size: 40px;
 }
 
@@ -61,7 +73,7 @@ body {
 #input {
     font-family: 'Roboto', sans-serif;
     width: 95px;
-    margin-top: 10px;
+    margin-top: 30px;
     border-radius: var(--border-radius);
     font-size: 40px;
     text-align: center;
@@ -81,7 +93,7 @@ body {
 }
 
 .player-count-container {
-    margin-top: 30px;
+    margin: 30px 0px 0px 0px;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -133,7 +145,7 @@ body {
     width: 200px;
     height: 20px;
     border: 2px solid var(--main1);
-    margin-top: 35px;
+    margin: 30px 0px 0px 0px;
     border-radius: var(--border-radius);
 }
 
@@ -142,6 +154,7 @@ body {
     height: 100%;
     background-color: var(--main1);
 }
+
 
 .delta-score-span {
     color: var(--green);

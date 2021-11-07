@@ -6,11 +6,7 @@ const mathQuestionGenerator = require('./math.js')
 const WebSocket = require('ws')
 const { v4: uuidv4 } = require('uuid')
 const wss = new WebSocket.Server({ server: server })
-const difficulty = 2
-const questionDuration = 5
-const podiumDuration = 10
-const totalRounds = 3
-const startUpTime = 3
+const options = require('./options.json');
 let questionTimer
 let gameRunning = false
 let roundCounter = 0
@@ -32,6 +28,7 @@ const configureNewClient = (ws) => {
   ws.name = nameGenerator()
   ws.score = 0
   ws.answered = false
+  ws.correctRounds = 0
   ws.deltaScore = 0
 }
 
@@ -57,6 +54,7 @@ const resetGame = () => {
       client.answered = false
       client.deltaScore = 0
       client.score = 0
+      client.correctRounds = 0
     }
   })
 }
@@ -72,16 +70,16 @@ const resetRound = () => {
 
 const sendMathQuestion = () => {
   questionTime = Date.now()
-  currentQuestion = mathQuestionGenerator(difficulty)
+  currentQuestion = mathQuestionGenerator(options.difficulty)
   sendToAll({
     type: 'mathQuestion',
     data: {
       num1: currentQuestion.num1,
       num2: currentQuestion.num2,
       type: currentQuestion.type,
-      time: questionDuration,
+      time: options.questionDuration,
       round: roundCounter,
-      totalRounds: totalRounds,
+      totalRounds: options.totalRounds,
     }
   })
 }
@@ -92,6 +90,7 @@ const sendPodium = () => {
       id: e.id,
       name: e.name,
       score: e.score,
+      correctRounds: e.correctRounds,
     }
   })
   allPlayerData.sort((a, b) => b.score - a.score)
@@ -100,7 +99,8 @@ const sendPodium = () => {
     type: 'podium',
     data: {
       players: podium,
-      time: podiumDuration
+      time: options.podiumDuration,
+      totalRounds: options.totalRounds,
     },
   })
 }
@@ -114,9 +114,25 @@ const sendId = (ws) => {
   }))
 }
 
+const calculateScore = () => {
+  return Math.ceil(500 - (Date.now() - questionTime) / (options.questionDuration * 2)) + 500
+}
+
+const sendChatMessage = (ws, msg) => {
+  sendToAll({
+    type: 'chat',
+    data: {
+      time: Date.now(),
+      name: ws.name,
+      message: msg
+    },
+  })
+}
+
 const handleCorrectAnswer = (ws) => {
+  ws.correctRounds += 1
   ws.answered = true
-  ws.deltaScore = Math.ceil(1000 - (Date.now() - questionTime) / questionDuration)
+  ws.deltaScore = calculateScore()
   ws.score += ws.deltaScore
   ws.send(JSON.stringify({
     type: 'answer',
@@ -146,23 +162,30 @@ const stopGame = () => {
 
 const handleRounds = () => {
   roundCounter += 1
-  if (roundCounter > totalRounds) {
+  if (roundCounter > options.totalRounds) {
     stopGame()
-    setTimeout(startGame, podiumDuration * 1000)
+    setTimeout(startGame, options.podiumDuration * 1000)
   } else {
     resetRound()
     sendMathQuestion()
   }
 }
 
-const handleAnswers = (ws, msg) => {
-  if (gameRunning && currentQuestion && !ws.answered) {
-    const parsed = JSON.parse(msg)
-    if (parsed.answer == currentQuestion.answer) {
-      handleCorrectAnswer(ws)
-    } else {
-      handleWrongAnswer(ws)
-    }
+const handleIncoming = (ws, msg) => {
+  const parsed = JSON.parse(msg)
+  switch (parsed.type) {
+    case 'answer':
+      if (gameRunning && currentQuestion && !ws.answered) {
+        if (parsed.answer == currentQuestion.answer) {
+          handleCorrectAnswer(ws)
+        } else {
+          handleWrongAnswer(ws)
+        }
+      }
+      break;
+    case 'chat':
+      sendChatMessage(ws, parsed.message)
+      break;
   }
 }
 
@@ -170,7 +193,7 @@ wss.on('connection', (ws) => {
   configureNewClient(ws)
   sendId(ws)
   sendPlayerData()
-  ws.on('message', (msg) => handleAnswers(ws, msg))
+  ws.on('message', (msg) => handleIncoming(ws, msg))
   ws.on('close', () => {
     sendPlayerData()
   })
@@ -180,10 +203,10 @@ const startGame = () => {
   gameRunning = true
   sendPlayerData()
   handleRounds()
-  questionTimer = setInterval(handleRounds, questionDuration * 1000)
+  questionTimer = setInterval(handleRounds, options.questionDuration * 1000)
 }
 
-setTimeout(startGame, startUpTime * 1000)
+setTimeout(startGame, options.startUpTime * 1000)
 
 
 server.listen(3000, () => console.log(`Lisening on port :3000`))

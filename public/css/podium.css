@@ -3,11 +3,11 @@
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
-    width: 400px;
     height: 350px;
 }
 
 #first-place {
+    /* Necessary for confetti */
     height: 350px;
     animation: podium-first 1s cubic-bezier(.83, .08, .56, 1.35) 1s;
     animation-fill-mode: forwards;
@@ -48,6 +48,15 @@
 .first-place {
     color: var(--gold)
 }
+
+.second-place {
+    color: var(--silver)
+}
+
+.third-place {
+    color: var(--bronze)
+}
+
 
 .medal {
     font-size: 50px;

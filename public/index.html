@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/index.css">
     <link rel="stylesheet" href="css/player-table.css">
+    <link rel="stylesheet" href="css/chat.css">
     <link rel="stylesheet" href="css/podium.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,19 +22,28 @@
 <body>
     <div class="main-wrapper">
         <div class="left-container">
-            <div id="podium-container">
+            <h2 id="round-counter" style="display: none">Round 1/10</h2>
+            <div id="podium-container" style="display: none">
                 <div id="second-place" class="podium">
+                    <i class="fas fa-medal second-place medal"></i>
+                    <div class="podium-name"></div>
+                    <div class="podium-score"></div>
+                    <div class="podium-score"></div>
                 </div>
                 <div id="first-place" class="podium">
                     <i class="fas fa-medal first-place medal"></i>
-                    <div class="podium-name">CalmShark</div>
-                    <div class="podium-score"><strong>10000</strong> points</div>
-                    <div class="podium-score">2 out of 3</div>
+                    <div class="podium-name"></div>
+                    <div class="podium-score"></div>
+                    <div class="podium-score"></div>
                 </div>
-                <div id="third-place" class="podium"></div>
+                <div id="third-place" class="podium">
+                    <i class="fas fa-medal third-place medal"></i>
+                    <div class="podium-name"></div>
+                    <div class="podium-score"></div>
+                    <div class="podium-score"></div>
+                </div>
             </div>
-            <h2 id="round-counter" style="display: none">Round 1/10</h2>
-            <div id="game-container" style="display: none">
+            <div id="game-container">
                 <h1 id="question">
                     <div class="loader">
                         <div class="loading-dot"></div>
@@ -50,7 +60,7 @@
         <div class="right-container">
             <div class="player-count-container">
                 <div class="online-dot"></div>
-                <h3 id="player-count">Players Online: -</h3>
+                <h3 id="player-count">Players Online: ?</h3>
             </div>
             <table id="player-table">
                 <tr>
@@ -59,23 +69,18 @@
                     <th><i class="fas fa-star"></i> Score</th>
                 </tr>
             </table>
+            <div id="chat-container">
+                <h3 class="chat-title">Chat</h3>
+                <div id="scroll-container"></div>
+                <div id="chat-input-container">
+                    <input id="chat-input" placeholder="Send a message" />
+                    <div id="chat-button">Chat</div>
+                </div>
+            </div>
         </div>
     </div>
 </body>
 <script src="dom.js"></script>
 <script src="socket.js"></script>
-<script>
-    var rect = document.getElementById("first-place").getBoundingClientRect();
-    setTimeout(() => confetti({
-        particleCount: 80,
-        startVelocity: 20,
-        spread: 360,
-        zIndex: 0,
-        origin: {
-            y: (rect.top - (rect.top - rect.bottom) / 2) / window.innerHeight,
-            x: (rect.left - (rect.left - rect.right) / 2) / window.innerWidth
-        }
-    }), 2000)
-</script>
 
 </html>

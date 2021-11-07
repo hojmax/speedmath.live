@@ -1,13 +1,6 @@
 const socket = new WebSocket('ws://localhost:3000');
 let id;
 let playerData;
-let podiumTemplate = {
-    players: [
-        { id: "33419d56-1793-4e41-8505-7c18ec608382", name: "CalmShark", score: 1098 },
-        { id: "4b5055d5-3980-405c-91f7-89cbc4940f95", name: "GracefulBadger", score: 543 },
-        { id: "4b1235d5-3980-405c-91f7-89cbc4123015", name: "FunnyBeaver", score: 101 }
-    ], time: 10
-}
 
 const handleMessage = (msg) => {
     const resp = JSON.parse(msg.data)
@@ -36,6 +29,9 @@ const handleMessage = (msg) => {
         case 'podium':
             handlePodium(resp.data)
             break;
+        case 'chat':
+            handleChat(resp.data)
+            break;
         default:
             console.log('Unhandled response', resp)
             break;
@@ -51,6 +47,13 @@ const sendAnswer = (answer) => {
     socket.send(JSON.stringify({
         type: 'answer',
         answer: answer
+    }))
+}
+
+const sendChatMessage = (msg) => {
+    socket.send(JSON.stringify({
+        type: 'chat',
+        message: msg
     }))
 }
 
