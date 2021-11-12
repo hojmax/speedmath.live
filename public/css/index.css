@@ -6,13 +6,18 @@
     --main5: #323232;
     --green: #66ff58;
     --green2: #a8ffa0;
-    --red: #ffc0bb;
+    --light-red: #ffc0bb;
+    --red: #ff494c;
     --gold: #ffd700;
     --silver: #c0c0c0;
     --bronze: #df7f32;
+    --placeholder: #dddddd;
+    --button-hover: #808080;
+    --button-active: #767676;
     --border-radius: 5px;
     --small-padding: 5px;
     --large-padding: 20px;
+    --margin-top: 30px;
 }
 
 body {
@@ -52,7 +57,7 @@ body {
 
 
 #question {
-    margin: 30px 0px 0px 0px;
+    margin: var(--margin-top) 0px 0px 0px;
     font-size: 40px;
 }
 
@@ -73,7 +78,7 @@ body {
 #input {
     font-family: 'Roboto', sans-serif;
     width: 95px;
-    margin-top: 30px;
+    margin-top: var(--margin-top);
     color: var(--main2);
     border-radius: var(--border-radius);
     font-size: 40px;
@@ -94,7 +99,7 @@ body {
 }
 
 .player-count-container {
-    margin: 30px 0px 0px 0px;
+    margin: var(--margin-top) 0px 0px 0px;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -140,14 +145,14 @@ body {
 }
 
 #round-counter {
-    margin: 30px 0px 0px 0px;
+    margin: var(--margin-top) 0px 0px 0px;
 }
 
 #loading-bar-container {
     width: 200px;
     height: 20px;
     border: 2px solid var(--main1);
-    margin: 30px 0px 0px 0px;
+    margin: var(--margin-top) 0px 0px 0px;
     border-radius: var(--border-radius);
 }
 
@@ -196,7 +201,7 @@ body {
 @keyframes incorrect {
     0% {
         transform: translate(0, 0);
-        background-color: var(--red);
+        background-color: var(--light-red);
     }
 
     25% {

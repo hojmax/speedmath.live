@@ -27,6 +27,7 @@ const configureNewClient = (ws) => {
   ws.answered = false
   ws.correctRounds = 0
   ws.deltaScore = 0
+  ws.messageCount = 0
 }
 
 const sendPlayerData = () => {
@@ -52,6 +53,7 @@ const resetGame = () => {
       client.deltaScore = 0
       client.score = 0
       client.correctRounds = 0
+      client.messageCount = 0
     }
   })
 }
@@ -61,6 +63,7 @@ const resetRound = () => {
     if (client.readyState === WebSocket.OPEN) {
       client.answered = false
       client.deltaScore = 0
+      client.messageCount = 0
     }
   })
 }
@@ -175,7 +178,22 @@ const currentTimeString = () => {
   return (new Date).toTimeString().split(' ')[0]
 }
 
+const handleRateLimiting = (ws) => {
+  ws.messageCount += 1
+  if (ws.messageCount > options.rateLimit) {
+    ws.send(JSON.stringify({
+      type: 'rate-limit-kick'
+    }))
+    ws.close()
+    return true
+  }
+  return false
+}
+
 const handleIncoming = (ws, msg) => {
+  const isKicked = handleRateLimiting(ws)
+  if (isKicked) return
+
   const parsed = JSON.parse(msg)
   if (options.isDebugging) {
     console.log(currentTimeString(), ws.name, parsed)

@@ -1,11 +1,11 @@
 const addRow = (user, score, deltaScore, index, isClient) => {
     const element = document.getElementById('player-table').children[0]
-    var row = document.createElement('tr')
-    var col0 = document.createElement('td')
-    var col1 = document.createElement('td')
-    var col2 = document.createElement('td')
+    const row = document.createElement('tr')
+    const col0 = document.createElement('td')
+    const col1 = document.createElement('td')
+    const col2 = document.createElement('td')
     if (isClient) {
-        var caret = document.createElement('i')
+        const caret = document.createElement('i')
         caret.className = 'fas fa-angle-double-right'
         caret.id = 'client-indicator'
         col1.append(caret)
@@ -14,7 +14,7 @@ const addRow = (user, score, deltaScore, index, isClient) => {
     col1.append((isClient ? ' ' : '') + user)
     col2.append(score)
     if (deltaScore != 0) {
-        var span = document.createElement('span')
+        const span = document.createElement('span')
         span.className = 'delta-score-span'
         span.append(` +${deltaScore}`)
         col2.append(span)
@@ -51,11 +51,11 @@ const updatePlayerCount = (players) => {
     document.getElementById('player-count').innerText = `Players Online: ${players.length}`
 }
 
-const questionDOM = (question) => {
+const updateQuestionDOM = (question) => {
     const element = document.getElementById('question')
     element.innerHTML = ''
     element.append('What does ')
-    var span = document.createElement('span')
+    const span = document.createElement('span')
     span.id = 'question-span'
     span.append(question)
     element.append(span)
@@ -97,13 +97,9 @@ const handlePodium = (data) => {
     switchPodiumAndGame(data)
 }
 
-const serverErrorDOM = (error) => {
-    const element = document.getElementById('question')
-    element.innerText = 'Connection lost... Reload or try again later.'
-}
 
 const fireConfetti = () => {
-    var rect = document.getElementById("first-place").getBoundingClientRect();
+    const rect = document.getElementById('first-place').getBoundingClientRect();
     confetti({
         particleCount: 100,
         startVelocity: 25,
@@ -124,68 +120,54 @@ const setTimer = (data) => {
     element.style.animation = `slide ${data.time}s linear`
 }
 
-const handleIncorrect = () => {
-    const element = document.getElementById('input')
-    element.style.animation = 'none'
-    element.offsetHeight
-    element.style.animation = 'incorrect 0.5s ease'
-}
-
-const handleCorrect = () => {
-    answered = true
-    const element = document.getElementById('input')
-    element.style.animation = 'none'
-    element.offsetHeight
-    element.style.animation = 'correct 0.5s ease'
-    element.value = ''
-}
-
 const handleAnswer = (data) => {
+    const element = document.getElementById('input')
+    element.style.animation = 'none'
+    element.offsetHeight
+    element.style.animation = data.correct ? 'correct 0.5s ease' : 'incorrect 0.5s ease'
     if (data.correct) {
-        handleCorrect()
-    } else {
-        handleIncorrect()
+        answered = true
+        element.value = ''
     }
 }
 
-const handleChat = (data) => {
-    const date = new Date(data.time)
-    const dateString = date.toTimeString().split(' ')[0]
+const currentTimeString = () => {
+    return (new Date).toTimeString().split(' ')[0]
+}
+
+const chatMessage = (data, server = false, addTime = false) => {
     const element = document.getElementById('scroll-container')
     const messageContainer = document.createElement('div')
-    messageContainer.className = "message-container"
+    const serverClassName = server ? ' highlighted-chat-message' : ''
+    messageContainer.className = 'message-container'
     // Time
-    /*
-    const messageTime = document.createElement('div')
-    messageTime.className = "message-time"
-    messageTime.append(dateString)
-    messageContainer.append(messageTime)
-    */
+    if (addTime) {
+        const messageTime = document.createElement('div')
+        messageTime.className = 'message-time' + serverClassName
+        messageTime.append(currentTimeString())
+        messageContainer.append(messageTime)
+    }
     // Name
     const messageSender = document.createElement('div')
-    messageSender.className = "message-sender"
+    messageSender.className = 'message-sender' + serverClassName
     messageSender.append(`${data.name}:`)
     messageContainer.append(messageSender)
     // Content
     const messageContent = document.createElement('div')
-    messageContent.className = "message-content"
+    messageContent.className = 'message-content' + serverClassName
     messageContent.append(data.message)
     messageContainer.append(messageContent)
+    // DOM
     element.append(messageContainer)
-    var scrollDiv = document.getElementById("scroll-container");
+    const scrollDiv = document.getElementById('scroll-container');
     scrollDiv.scrollTop = scrollDiv.scrollHeight;
 }
 
 const updateQuestion = (data) => {
-    if (data.type === 'add') {
-        questionDOM(`${data.num1} + ${data.num2}`)
-    } else if (data.type === 'sub') {
-        questionDOM(`${data.num1} - ${data.num2}`)
-    } else if (data.type === 'mult') {
-        questionDOM(`${data.num1} × ${data.num2}`)
-    } else if (data.type === 'div') {
-        questionDOM(`${data.num1} / ${data.num2}`)
-    }
+    if (data.type === 'add') return updateQuestionDOM(`${data.num1} + ${data.num2}`)
+    if (data.type === 'sub') return updateQuestionDOM(`${data.num1} - ${data.num2}`)
+    if (data.type === 'mult') return updateQuestionDOM(`${data.num1} × ${data.num2}`)
+    if (data.type === 'div') return updateQuestionDOM(`${data.num1} / ${data.num2}`)
 }
 
 const startEventListeners = () => {

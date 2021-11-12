@@ -3,7 +3,7 @@ let id
 let playerData
 let answered = false
 let recievedPong = true
-let pongInterval;
+let pingInterval;
 
 const handleMessage = (msg) => {
     const resp = JSON.parse(msg.data)
@@ -34,10 +34,13 @@ const handleMessage = (msg) => {
             handlePodium(resp.data)
             break
         case 'chat':
-            handleChat(resp.data)
+            chatMessage(resp.data)
             break
         case 'pong':
             recievedPong = true
+            break
+        case 'rate-limit-kick':
+            messageToUser('You have been disconnected for sending too many requests.')
             break
         default:
             throw new Error('Unhandled Message')
@@ -51,12 +54,12 @@ const resetDeltaScore = (data) => {
 }
 
 const sendAnswer = (answer) => {
-    if (!answered) {
-        socket.send(JSON.stringify({
-            type: 'answer',
-            answer: answer
-        }))
-    }
+    if (answered) return
+
+    socket.send(JSON.stringify({
+        type: 'answer',
+        answer: answer
+    }))
 }
 
 const sendChatMessage = (msg) => {
@@ -66,18 +69,32 @@ const sendChatMessage = (msg) => {
     }))
 }
 
+const messageToUser = (message) => {
+    const data = {
+        time: Date.now(),
+        name: '[SERVER]',
+        message: message
+    }
+    chatMessage(data, server = true)
+}
+
+const connectionError = () => {
+    messageToUser('Connection lost... Reload or try again later.')
+}
+
 const startPingPong = () => {
-    pongInterval = setInterval(() => {
+    pingInterval = setInterval(() => {
         if (!recievedPong) {
-            serverErrorDOM()
-            clearInterval(pongInterval)
+            connectionError()
+            clearInterval(pingInterval)
+        } else {
+            recievedPong = false
+            socket.send(JSON.stringify({ type: 'ping' }))
         }
-        recievedPong = false
-        socket.send(JSON.stringify({ type: 'ping' }))
     }, 3000)
 }
 
-socket.addEventListener('error', serverErrorDOM)
+socket.addEventListener('error', connectionError)
 
 socket.addEventListener('message', handleMessage)
 
