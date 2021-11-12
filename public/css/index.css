@@ -1,9 +1,9 @@
 :root {
     --main1: #215eba;
-    --main2: #2b2b2b;
-    --main3: #9b9b9b;
-    --main4: #888888;
-    --main5: #323232;
+    --main2: #323437;
+    --main3: #9f9f9f;
+    --main4: #8f8f8f;
+    --main5: #393c41;
     --light-green: #a8ffa0;
     --green: #66ff58;
     --light-red: #ffc0bb;
@@ -12,8 +12,7 @@
     --silver: #c0c0c0;
     --bronze: #df7f32;
     --placeholder: #dddddd;
-    --button-hover: #808080;
-    --button-active: #767676;
+    --button-active: #838383;
     --border-radius: 5px;
     --small-padding: 5px;
     --large-padding: 20px;

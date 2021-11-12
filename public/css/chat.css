@@ -33,7 +33,7 @@
     margin: 10px;
     width: 200px;
     font-family: 'Roboto', sans-serif;
-    background-color: var(--main4);
+    background-color: var(--main3);
     color: white;
     border-radius: var(--border-radius);
     border: none;
@@ -50,7 +50,7 @@
 }
 
 #chat-button:hover {
-    background-color: var(--button-hover);
+    background-color: var(--main4);
 }
 
 #chat-button:active {
@@ -71,8 +71,7 @@
     padding: 1px 5px 1px 5px;
     font-size: 15px;
     line-height: 25px;
-    color: white;
-    background-color: var(--main4);
+    background-color: var(--main3);
     border-radius: var(--border-radius);
     cursor: pointer;
 }

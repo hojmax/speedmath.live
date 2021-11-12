@@ -39,11 +39,32 @@ const animateTable = () => {
     element.style.animation = `shake 0.5s ease`
 }
 
+const tripleDotRow = () => {
+    const element = document.getElementById('player-table').children[0]
+    const row = document.createElement('tr')
+    const col = document.createElement('td')
+    col.innerText = '...'
+    row.append(document.createElement('td'))
+    row.append(col)
+    row.append(document.createElement('td'))
+    element.append(row)
+}
+
 const updateTable = (players) => {
+    const maxPlayersShown = 6
+    const clientIndex = players.findIndex(e => e.id === id)
+    const isShown = clientIndex < maxPlayersShown
+    const limit = players.length <= maxPlayersShown ? players.length :
+        isShown ? maxPlayersShown : maxPlayersShown - 1
     clearTable()
-    for (let i = 0; i < players.length; i++) {
+    for (let i = 0; i < limit; i++) {
         const e = players[i]
         addRow(e.name, e.score, e.deltaScore, i, id === e.id)
+    }
+    if (players.length > maxPlayersShown) tripleDotRow()
+    if (!isShown) {
+        const e = players[clientIndex]
+        addRow(e.name, e.score, e.deltaScore, clientIndex, id === e.id)
     }
 }
 

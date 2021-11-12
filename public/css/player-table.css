@@ -6,10 +6,6 @@
     background-color: var(--main4);
 }
 
-#player-table th {
-    color: white;
-    background-color: var(--main1);
-}
 
 #player-table tr:last-child td:first-child {
     border-bottom-left-radius: var(--border-radius);
@@ -35,8 +31,12 @@
     min-width: 280px;
 }
 
-#player-table td,
 #player-table th {
+    background-color: var(--main1);
+}
+
+#player-table th,
+#player-table td {
     text-align: center;
     padding: var(--small-padding);
 }
