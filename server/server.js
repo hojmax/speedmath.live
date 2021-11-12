@@ -130,7 +130,7 @@ const sendChatMessage = (ws, msg) => {
 }
 
 const handleCorrectAnswer = (ws) => {
-  ws.correctRounds += 1
+  ws.correctRounds++
   ws.answered = true
   ws.deltaScore = calculateScore()
   ws.score += ws.deltaScore
@@ -160,7 +160,7 @@ const stopGame = () => {
 }
 
 const handleRounds = () => {
-  roundCounter += 1
+  roundCounter++
   if (roundCounter > options.totalRounds) {
     stopGame()
     setTimeout(startGame, options.duration.podium * 1000)
@@ -179,8 +179,7 @@ const currentTimeString = () => {
 }
 
 const handleRateLimiting = (ws) => {
-  ws.messageCount += 1
-  if (ws.messageCount > options.rateLimit) {
+  if (++ws.messageCount > options.rateLimit) {
     ws.send(JSON.stringify({
       type: 'rate-limit-kick'
     }))

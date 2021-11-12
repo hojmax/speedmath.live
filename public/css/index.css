@@ -4,8 +4,8 @@
     --main3: #9b9b9b;
     --main4: #888888;
     --main5: #323232;
+    --light-green: #a8ffa0;
     --green: #66ff58;
-    --green2: #a8ffa0;
     --light-red: #ffc0bb;
     --red: #ff494c;
     --gold: #ffd700;
@@ -57,11 +57,13 @@ body {
 
 
 #question {
+    text-align: center;
     margin: var(--margin-top) 0px 0px 0px;
     font-size: 40px;
 }
 
 #question-span {
+    white-space: nowrap;
     background-color: var(--main1);
     border-radius: var(--border-radius);
     padding: 0px var(--small-padding) 0px var(--small-padding);
@@ -225,7 +227,7 @@ body {
 @keyframes correct {
     0% {
         transform: scale(1);
-        background-color: var(--green2);
+        background-color: var(--light-green);
     }
 
     33% {

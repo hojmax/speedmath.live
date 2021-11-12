@@ -170,7 +170,7 @@ const updateQuestion = (data) => {
     if (data.type === 'div') return updateQuestionDOM(`${data.num1} / ${data.num2}`)
 }
 
-const startEventListeners = () => {
+const setup = () => {
     document.getElementById('input').addEventListener('keydown', (event) => {
         if (event.key === 'Enter' && event.target.value) {
             sendAnswer(event.target.value)
@@ -191,4 +191,4 @@ const startEventListeners = () => {
     })
 }
 
-startEventListeners()
+setup()
