@@ -1,3 +1,5 @@
+const options = require('./options.json')
+
 const adjectives = [
     'Adorable',
     'Aggressive',
@@ -174,7 +176,9 @@ const getName = () => {
     const animal = animals[Math.floor(Math.random() * animals.length)]
     const adjective = adjectives[Math.floor(Math.random() * adjectives.length)]
     const output = adjective + animal;
-    return output.length <= 15 ? output : getName()
+    return output.length <= options.name.maxLength ? output : getName()
 }
+
+
 
 module.exports = getName

@@ -1,7 +1,26 @@
 {
-    "difficulty": 2,
-    "questionDuration": 5,
-    "podiumDuration": 15,
+    "isDebugging": false,
     "totalRounds": 10,
-    "startUpTime":3
+    "duration": {
+        "startup": 3,
+        "podium": 15,
+        "round": 5
+    },
+    "name": {
+        "maxLength": 15
+    },
+    "score": {
+        "min": 250,
+        "max": 1000
+    },
+    "number": {
+        "larger": {
+            "min": 1,
+            "max": 150
+        },
+        "smaller": {
+            "min": 2,
+            "max": 25
+        }
+    }
 }

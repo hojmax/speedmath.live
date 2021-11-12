@@ -69,6 +69,7 @@ const updateRoundCounter = (data) => {
 }
 
 const switchPodiumAndGame = (data) => {
+    document.getElementById('input').value = ''
     document.getElementById('round-counter').style.display = 'block'
     document.getElementById('round-counter').innerText = `Podium`
     document.getElementById('podium-container').style.display = 'flex'
@@ -109,8 +110,8 @@ const fireConfetti = () => {
         spread: 360,
         zIndex: 0,
         origin: {
-            y: (rect.top - (rect.top - rect.bottom) / 2) / window.innerHeight,
-            x: (rect.left - (rect.left - rect.right) / 2) / window.innerWidth
+            y: (rect.top + rect.bottom) / (window.innerHeight * 2),
+            x: (rect.left + rect.right) / (window.innerWidth * 2)
         }
     })
 }
@@ -131,6 +132,7 @@ const handleIncorrect = () => {
 }
 
 const handleCorrect = () => {
+    answered = true
     const element = document.getElementById('input')
     element.style.animation = 'none'
     element.offsetHeight
@@ -153,10 +155,12 @@ const handleChat = (data) => {
     const messageContainer = document.createElement('div')
     messageContainer.className = "message-container"
     // Time
+    /*
     const messageTime = document.createElement('div')
     messageTime.className = "message-time"
     messageTime.append(dateString)
     messageContainer.append(messageTime)
+    */
     // Name
     const messageSender = document.createElement('div')
     messageSender.className = "message-sender"
@@ -184,7 +188,7 @@ const updateQuestion = (data) => {
     }
 }
 
-const startEventListernes = () => {
+const startEventListeners = () => {
     document.getElementById('input').addEventListener('keydown', (event) => {
         if (event.key === 'Enter' && event.target.value) {
             sendAnswer(event.target.value)
@@ -196,6 +200,13 @@ const startEventListernes = () => {
             event.target.value = ''
         }
     })
+    document.getElementById('chat-button').addEventListener('click', (event) => {
+        const element = document.getElementById('chat-input')
+        if (element.value) {
+            sendChatMessage(element.value)
+            element.value = ''
+        }
+    })
 }
 
-startEventListernes()
+startEventListeners()

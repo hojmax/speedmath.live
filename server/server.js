@@ -6,14 +6,11 @@ const mathQuestionGenerator = require('./math.js')
 const WebSocket = require('ws')
 const { v4: uuidv4 } = require('uuid')
 const wss = new WebSocket.Server({ server: server })
-const options = require('./options.json');
+const options = require('./options.json')
 let questionTimer
-let gameRunning = false
 let roundCounter = 0
 let currentQuestion
 let questionTime
-
-const printClientCount = () => console.log('Clients connected:', wss.clients.size)
 
 const sendToAll = (data) => {
   wss.clients.forEach((client) => {
@@ -70,14 +67,14 @@ const resetRound = () => {
 
 const sendMathQuestion = () => {
   questionTime = Date.now()
-  currentQuestion = mathQuestionGenerator(options.difficulty)
+  currentQuestion = mathQuestionGenerator()
   sendToAll({
     type: 'mathQuestion',
     data: {
       num1: currentQuestion.num1,
       num2: currentQuestion.num2,
       type: currentQuestion.type,
-      time: options.questionDuration,
+      time: options.duration.round,
       round: roundCounter,
       totalRounds: options.totalRounds,
     }
@@ -99,7 +96,7 @@ const sendPodium = () => {
     type: 'podium',
     data: {
       players: podium,
-      time: options.podiumDuration,
+      time: options.duration.podium,
       totalRounds: options.totalRounds,
     },
   })
@@ -115,7 +112,7 @@ const sendId = (ws) => {
 }
 
 const calculateScore = () => {
-  return Math.ceil(500 - (Date.now() - questionTime) / (options.questionDuration * 2)) + 500
+  return Math.round((options.score.max - options.score.min) * (1 - (Date.now() - questionTime) / (options.duration.round * 1000))) + options.score.min
 }
 
 const sendChatMessage = (ws, msg) => {
@@ -153,7 +150,6 @@ const handleWrongAnswer = (ws) => {
 }
 
 const stopGame = () => {
-  gameRunning = false
   clearInterval(questionTimer)
   roundCounter = 0
   sendPodium()
@@ -164,28 +160,44 @@ const handleRounds = () => {
   roundCounter += 1
   if (roundCounter > options.totalRounds) {
     stopGame()
-    setTimeout(startGame, options.podiumDuration * 1000)
+    setTimeout(startGame, options.duration.podium * 1000)
   } else {
     resetRound()
     sendMathQuestion()
   }
 }
 
+const sendPong = (ws) => {
+  ws.send(JSON.stringify({ type: 'pong' }))
+}
+
+const currentTimeString = () => {
+  return (new Date).toTimeString().split(' ')[0]
+}
+
 const handleIncoming = (ws, msg) => {
   const parsed = JSON.parse(msg)
+  if (options.isDebugging) {
+    console.log(currentTimeString(), ws.name, parsed)
+  }
   switch (parsed.type) {
     case 'answer':
-      if (gameRunning && currentQuestion && !ws.answered) {
+      if (currentQuestion && !ws.answered) {
         if (parsed.answer == currentQuestion.answer) {
           handleCorrectAnswer(ws)
         } else {
           handleWrongAnswer(ws)
         }
       }
-      break;
+      break
     case 'chat':
       sendChatMessage(ws, parsed.message)
-      break;
+      break
+    case 'ping':
+      sendPong(ws)
+      break
+    default:
+      throw new Error('Unhandled Message')
   }
 }
 
@@ -200,13 +212,12 @@ wss.on('connection', (ws) => {
 })
 
 const startGame = () => {
-  gameRunning = true
   sendPlayerData()
   handleRounds()
-  questionTimer = setInterval(handleRounds, options.questionDuration * 1000)
+  questionTimer = setInterval(handleRounds, options.duration.round * 1000)
 }
 
-setTimeout(startGame, options.startUpTime * 1000)
+setTimeout(startGame, options.duration.startup * 1000)
 
 app.use(express.static('public'))
 

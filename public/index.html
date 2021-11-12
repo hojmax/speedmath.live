@@ -51,7 +51,7 @@
                         <div class="loading-dot"></div>
                     </div>
                 </h1>
-                <input id="input" maxlength="4" autofocus="autofocus" onfocus="this.select()">
+                <input id="input" tabindex="1" maxlength="4" autofocus="autofocus" onfocus="this.select()">
             </div>
             <div id="loading-bar-container" style="display: none">
                 <div id="loading-bar"></div>
@@ -73,8 +73,8 @@
                 <h3 class="chat-title">Chat</h3>
                 <div id="scroll-container"></div>
                 <div id="chat-input-container">
-                    <input id="chat-input" placeholder="Send a message" />
-                    <div id="chat-button">Chat</div>
+                    <input id="chat-input" tabindex="2" placeholder="Send a message" />
+                    <div id="chat-button" tabindex="3">Chat</div>
                 </div>
             </div>
         </div>
