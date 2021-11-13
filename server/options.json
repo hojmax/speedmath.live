@@ -1,7 +1,7 @@
 {
     "isDebugging": false,
     "totalRounds": 10,
-    "rateLimit": 10,
+    "rateLimit": 15,
     "duration": {
         "startup": 3,
         "round": 5,

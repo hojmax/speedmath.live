@@ -1,27 +1,25 @@
 const express = require('express')
 const app = express()
 const server = require('http').createServer(app)
-const nameGenerator = require('./nameGenerator.js')
 const mathQuestionGenerator = require('./math.js')
-const WebSocket = require('ws')
+const nameGenerator = require('./nameGenerator.js')
 const { v4: uuidv4 } = require('uuid')
+const WebSocket = require('ws')
 const websocket = new WebSocket.Server({ server: server })
 const options = require('./options.json')
+let showingPodium = false
 let roundInterval
 let roundCounter = 0
 let currentQuestion
 let startOfRound
 
+const debuggingLog = (client, data, incoming) => {
+  console.log(`[${incoming ? 'IN' : 'OUT'}], ${client.name}, ${data.type.toUpperCase()} ${data.data ? JSON.stringify(data.data) : ''}`)
+}
+
 const sendJSON = (client, data) => {
   if (options.isDebugging) debuggingLog(client, data, incoming = false)
   client.send(JSON.stringify(data))
-}
-
-const sendToAll = (data) => {
-  websocket.clients.forEach((client) => {
-    if (client.readyState !== WebSocket.OPEN) return
-    sendJSON(client, data)
-  })
 }
 
 const configureNewClient = (client) => {
@@ -32,6 +30,28 @@ const configureNewClient = (client) => {
   client.correctRounds = 0
   client.deltaScore = 0
   client.messageCount = 0
+}
+
+const sendId = (client) => {
+  sendJSON(client, {
+    type: 'id',
+    data: {
+      id: client.id
+    }
+  })
+}
+
+const sendPong = (client) => {
+  sendJSON(client, { type: 'pong' })
+}
+
+const handleWrongAnswer = (client) => {
+  sendJSON(client, {
+    type: 'answer',
+    data: {
+      correct: false
+    }
+  })
 }
 
 const sendPlayerData = () => {
@@ -45,8 +65,15 @@ const sendPlayerData = () => {
   })
   allPlayerData.sort((a, b) => b.score - a.score)
   sendToAll({
-    type: 'playerData',
+    type: 'player-data',
     data: allPlayerData
+  })
+}
+
+const sendToAll = (data) => {
+  websocket.clients.forEach((client) => {
+    if (client.readyState !== WebSocket.OPEN) return
+    sendJSON(client, data)
   })
 }
 
@@ -94,6 +121,7 @@ const sendQuestion = () => {
 }
 
 const sendPodium = () => {
+  startOfRound = Date.now()
   const allPlayerData = [...websocket.clients.values()].map(e => {
     return {
       id: e.id,
@@ -111,15 +139,6 @@ const sendPodium = () => {
       time: options.duration.podium,
       totalRounds: options.totalRounds,
     },
-  })
-}
-
-const sendId = (client) => {
-  sendJSON(client, {
-    type: 'id',
-    data: {
-      id: client.id
-    }
   })
 }
 
@@ -152,18 +171,10 @@ const handleCorrectAnswer = (client) => {
   sendPlayerData()
 }
 
-const handleWrongAnswer = (client) => {
-  sendJSON(client, {
-    type: 'answer',
-    data: {
-      correct: false
-    }
-  })
-}
-
 const stopGame = () => {
   clearInterval(roundInterval)
   roundCounter = 0
+  showingPodium = true
   sendPodium()
   resetGame()
 }
@@ -179,10 +190,6 @@ const handleRounds = () => {
   }
 }
 
-const sendPong = (client) => {
-  sendJSON(client, { type: 'pong' })
-}
-
 const handleRateLimiting = (client) => {
   if (++client.messageCount > options.rateLimit) {
     sendJSON(client, {
@@ -194,9 +201,6 @@ const handleRateLimiting = (client) => {
   return false
 }
 
-const debuggingLog = (client, data, incoming) => {
-  console.log(`[${incoming ? 'IN' : 'OUT'}], ${client.name}, ${data.type.toUpperCase()} ${data.data ? JSON.stringify(data.data) : ''}`)
-}
 
 const handleIncoming = (client, msg) => {
   const isKicked = handleRateLimiting(client)
@@ -212,8 +216,19 @@ const handleIncoming = (client, msg) => {
       return handleWrongAnswer(client)
     case 'chat': return sendChatMessage(client, parsed.message)
     case 'ping': return sendPong(client)
+    case 'get-timing': return sendTiming(client)
     default: throw new Error(`Unhandled Message: ${msg} `)
   }
+}
+
+const sendTiming = (client) => {
+  sendJSON(client, {
+    type: 'animation-timing',
+    data: {
+      elapsed: Date.now() - startOfRound,
+      time: showingPodium ? options.duration.podium : options.duration.round
+    }
+  })
 }
 
 websocket.on('connection', (client) => {
@@ -227,6 +242,7 @@ websocket.on('connection', (client) => {
 })
 
 const startGame = () => {
+  showingPodium = false
   sendPlayerData()
   handleRounds()
   roundInterval = setInterval(handleRounds, options.duration.round * 1000)

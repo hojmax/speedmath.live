@@ -3,7 +3,9 @@
     width: 100%;
     border-radius: var(--border-radius);
     margin: var(--margin-top) 0px 0px 0px;
-    height: 400px;
+    flex-grow: 1;
+    min-height: 250px;
+    max-height: 490px;
     display: flex;
     flex-direction: column;
     border-left: 3px solid var(--main1);

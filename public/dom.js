@@ -6,7 +6,7 @@ const addRow = (user, score, deltaScore, index, isClient) => {
     const col2 = document.createElement('td')
     if (isClient) {
         const caret = document.createElement('i')
-        caret.className = 'fas fa-angle-double-right'
+        caret.className = 'fas fa-star'
         caret.id = 'client-indicator'
         col1.append(caret)
     }
@@ -97,7 +97,7 @@ const switchPodiumAndGame = (data) => {
         document.getElementById('podium-container').style.display = 'none'
         document.getElementById('game-container').style.display = 'flex'
     }, data.time * 1000)
-    setTimeout(fireConfetti, 2000)
+    if (viewingTab) setTimeout(fireConfetti, 2000)
 }
 
 const clearPodium = () => {
@@ -142,10 +142,11 @@ const fireConfetti = () => {
 
 const setTimer = (data) => {
     document.getElementById('loading-bar-container').style.display = 'block'
+    const timingDelay = data.elapsed ? ` ${-data.elapsed / 1000}s` : ''
     const element = document.getElementById('loading-bar')
     element.style.animation = 'none'
     element.offsetHeight
-    element.style.animation = `slide ${data.time}s linear`
+    element.style.animation = `slide ${data.time}s linear` + timingDelay
 }
 
 const handleAnswer = (data) => {
@@ -215,6 +216,11 @@ const setup = () => {
         if (!element.value) return
         sendChatMessage(element.value)
         element.value = ''
+    })
+    window.addEventListener('blur', () => viewingTab = false)
+    window.addEventListener('focus', () => {
+        viewingTab = true
+        requestAnimationTiming()
     })
 }
 

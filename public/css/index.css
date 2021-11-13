@@ -16,18 +16,20 @@
     --border-radius: 5px;
     --small-padding: 5px;
     --large-padding: 20px;
-    --margin-top: 30px;
+    --margin-top: 20px;
 }
 
 body {
     background-color: var(--main2);
     margin: 0px;
-    padding: 0px var(--large-padding) var(--large-padding) var(--large-padding);
+    padding: 0px var(--large-padding) 0px var(--large-padding);
     color: white;
     font-family: 'Roboto', sans-serif;
+    height: 100vh;
 }
 
 .main-wrapper {
+    height: 100%;
     display: flex;
     flex-wrap: wrap;
 }
@@ -57,7 +59,7 @@ body {
 
 #question {
     text-align: center;
-    margin: var(--margin-top) 0px 0px 0px;
+    margin: 23px 0px 0px 0px;
     font-size: 40px;
 }
 
@@ -79,7 +81,7 @@ body {
 #input {
     font-family: 'Roboto', sans-serif;
     width: 95px;
-    margin-top: var(--margin-top);
+    margin-top: 30px;
     color: var(--main2);
     border-radius: var(--border-radius);
     font-size: 40px;
@@ -146,14 +148,14 @@ body {
 }
 
 #round-counter {
-    margin: var(--margin-top) 0px 0px 0px;
+    margin: 40px 0px 0px 0px;
 }
 
 #loading-bar-container {
     width: 200px;
     height: 20px;
     border: 2px solid var(--main1);
-    margin: var(--margin-top) 0px 0px 0px;
+    margin: 30px 0px 10px 0px;
     border-radius: var(--border-radius);
 }
 

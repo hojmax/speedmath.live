@@ -4,20 +4,26 @@ let playerData
 let answered = false
 let recievedPong = true
 let pingInterval
+let viewingTab = true
 
 const handleMessage = (msg) => {
     const resp = JSON.parse(msg.data)
     switch (resp.type) {
-        case 'playerData': return handlePlayerData(resp.data)
+        case 'rate-limit-kick': return messageToUser('You have been disconnected for sending too many requests.')
+        case 'player-data': return handlePlayerData(resp.data)
         case 'question': return handleQuestion(resp.data)
         case 'answer': return handleAnswer(resp.data)
         case 'podium': return handlePodium(resp.data)
         case 'chat': return chatMessage(resp.data)
-        case 'id': return id = resp.data.id
         case 'pong': return recievedPong = true
-        case 'rate-limit-kick': return messageToUser('You have been disconnected for sending too many requests.')
+        case 'id': return id = resp.data.id
+        case 'animation-timing': return setTimer(resp.data)
         default: throw new Error(`Unhandled Message: ${msg}`)
     }
+}
+
+const sendJSON = (data) => {
+    socket.send(JSON.stringify(data))
 }
 
 const handleQuestion = (data) => {
@@ -40,19 +46,23 @@ const resetDeltaScore = (data) => {
     data.forEach(e => e.deltaScore = 0)
 }
 
+const requestAnimationTiming = () => {
+    sendJSON({ type: 'get-timing' })
+}
+
 const sendAnswer = (answer) => {
     if (answered) return
-    socket.send(JSON.stringify({
+    sendJSON({
         type: 'answer',
         answer: answer
-    }))
+    })
 }
 
 const sendChatMessage = (msg) => {
-    socket.send(JSON.stringify({
+    sendJSON({
         type: 'chat',
         message: msg
-    }))
+    })
 }
 
 const messageToUser = (message) => {
@@ -75,7 +85,7 @@ const startPingPong = () => {
             clearInterval(pingInterval)
         } else {
             recievedPong = false
-            socket.send(JSON.stringify({ type: 'ping' }))
+            sendJSON({ type: 'ping' })
         }
     }, 3000)
 }
