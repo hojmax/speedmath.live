@@ -179,6 +179,4 @@ const getName = () => {
     return output.length <= options.name.maxLength ? output : getName()
 }
 
-
-
 module.exports = getName

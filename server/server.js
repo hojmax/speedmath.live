@@ -5,33 +5,37 @@ const nameGenerator = require('./nameGenerator.js')
 const mathQuestionGenerator = require('./math.js')
 const WebSocket = require('ws')
 const { v4: uuidv4 } = require('uuid')
-const wss = new WebSocket.Server({ server: server })
+const websocket = new WebSocket.Server({ server: server })
 const options = require('./options.json')
-let questionTimer
+let roundInterval
 let roundCounter = 0
 let currentQuestion
-let questionTime
+let startOfRound
+
+const sendJSON = (client, data) => {
+  if (options.isDebugging) debuggingLog(client, data, incoming = false)
+  client.send(JSON.stringify(data))
+}
 
 const sendToAll = (data) => {
-  wss.clients.forEach((client) => {
-    if (client.readyState === WebSocket.OPEN) {
-      client.send(JSON.stringify(data))
-    }
+  websocket.clients.forEach((client) => {
+    if (client.readyState !== WebSocket.OPEN) return
+    sendJSON(client, data)
   })
 }
 
-const configureNewClient = (ws) => {
-  ws.id = uuidv4()
-  ws.name = nameGenerator()
-  ws.score = 0
-  ws.answered = false
-  ws.correctRounds = 0
-  ws.deltaScore = 0
-  ws.messageCount = 0
+const configureNewClient = (client) => {
+  client.id = uuidv4()
+  client.name = nameGenerator()
+  client.score = 0
+  client.answered = false
+  client.correctRounds = 0
+  client.deltaScore = 0
+  client.messageCount = 0
 }
 
 const sendPlayerData = () => {
-  const allPlayerData = [...wss.clients.values()].map(e => {
+  const allPlayerData = [...websocket.clients.values()].map(e => {
     return {
       id: e.id,
       name: e.name,
@@ -46,33 +50,38 @@ const sendPlayerData = () => {
   })
 }
 
+const setForAll = (parameters) => {
+  websocket.clients.forEach((client) => {
+    if (client.readyState !== WebSocket.OPEN) return
+    Object.entries(parameters).forEach(entry => {
+      client[entry[0]] = entry[1]
+    })
+  })
+}
+
 const resetGame = () => {
-  wss.clients.forEach((client) => {
-    if (client.readyState === WebSocket.OPEN) {
-      client.answered = false
-      client.deltaScore = 0
-      client.score = 0
-      client.correctRounds = 0
-      client.messageCount = 0
-    }
+  setForAll({
+    answered: false,
+    deltaScore: 0,
+    score: 0,
+    correctRounds: 0,
+    messageCount: 0,
   })
 }
 
 const resetRound = () => {
-  wss.clients.forEach((client) => {
-    if (client.readyState === WebSocket.OPEN) {
-      client.answered = false
-      client.deltaScore = 0
-      client.messageCount = 0
-    }
+  setForAll({
+    answered: false,
+    deltaScore: 0,
+    messageCount: 0,
   })
 }
 
-const sendMathQuestion = () => {
-  questionTime = Date.now()
+const sendQuestion = () => {
+  startOfRound = Date.now()
   currentQuestion = mathQuestionGenerator()
   sendToAll({
-    type: 'mathQuestion',
+    type: 'question',
     data: {
       num1: currentQuestion.num1,
       num2: currentQuestion.num2,
@@ -85,7 +94,7 @@ const sendMathQuestion = () => {
 }
 
 const sendPodium = () => {
-  const allPlayerData = [...wss.clients.values()].map(e => {
+  const allPlayerData = [...websocket.clients.values()].map(e => {
     return {
       id: e.id,
       name: e.name,
@@ -105,55 +114,55 @@ const sendPodium = () => {
   })
 }
 
-const sendId = (ws) => {
-  ws.send(JSON.stringify({
+const sendId = (client) => {
+  sendJSON(client, {
     type: 'id',
     data: {
-      id: ws.id
+      id: client.id
     }
-  }))
+  })
 }
 
 const calculateScore = () => {
-  return Math.round((options.score.max - options.score.min) * (1 - (Date.now() - questionTime) / (options.duration.round * 1000))) + options.score.min
+  return Math.round((options.score.max - options.score.min) * (1 - (Date.now() - startOfRound) / (options.duration.round * 1000))) + options.score.min
 }
 
-const sendChatMessage = (ws, msg) => {
+const sendChatMessage = (client, msg) => {
   sendToAll({
     type: 'chat',
     data: {
       time: Date.now(),
-      name: ws.name,
+      name: client.name,
       message: msg
     },
   })
 }
 
-const handleCorrectAnswer = (ws) => {
-  ws.correctRounds++
-  ws.answered = true
-  ws.deltaScore = calculateScore()
-  ws.score += ws.deltaScore
-  ws.send(JSON.stringify({
+const handleCorrectAnswer = (client) => {
+  client.correctRounds++
+  client.answered = true
+  client.deltaScore = calculateScore()
+  client.score += client.deltaScore
+  sendJSON(client, {
     type: 'answer',
     data: {
       correct: true
     }
-  }))
+  })
   sendPlayerData()
 }
 
-const handleWrongAnswer = (ws) => {
-  ws.send(JSON.stringify({
+const handleWrongAnswer = (client) => {
+  sendJSON(client, {
     type: 'answer',
     data: {
       correct: false
     }
-  }))
+  })
 }
 
 const stopGame = () => {
-  clearInterval(questionTimer)
+  clearInterval(roundInterval)
   roundCounter = 0
   sendPodium()
   resetGame()
@@ -166,64 +175,53 @@ const handleRounds = () => {
     setTimeout(startGame, options.duration.podium * 1000)
   } else {
     resetRound()
-    sendMathQuestion()
+    sendQuestion()
   }
 }
 
-const sendPong = (ws) => {
-  ws.send(JSON.stringify({ type: 'pong' }))
+const sendPong = (client) => {
+  sendJSON(client, { type: 'pong' })
 }
 
-const currentTimeString = () => {
-  return (new Date).toTimeString().split(' ')[0]
-}
-
-const handleRateLimiting = (ws) => {
-  if (++ws.messageCount > options.rateLimit) {
-    ws.send(JSON.stringify({
+const handleRateLimiting = (client) => {
+  if (++client.messageCount > options.rateLimit) {
+    sendJSON(client, {
       type: 'rate-limit-kick'
-    }))
-    ws.close()
+    })
+    client.close()
     return true
   }
   return false
 }
 
-const handleIncoming = (ws, msg) => {
-  const isKicked = handleRateLimiting(ws)
+const debuggingLog = (client, data, incoming) => {
+  console.log(`[${incoming ? 'IN' : 'OUT'}], ${client.name}, ${data.type.toUpperCase()} ${data.data ? JSON.stringify(data.data) : ''}`)
+}
+
+const handleIncoming = (client, msg) => {
+  const isKicked = handleRateLimiting(client)
   if (isKicked) return
 
   const parsed = JSON.parse(msg)
-  if (options.isDebugging) {
-    console.log(currentTimeString(), ws.name, parsed)
-  }
+  if (options.isDebugging) debuggingLog(client, parsed, incoming = true)
+
   switch (parsed.type) {
     case 'answer':
-      if (currentQuestion && !ws.answered) {
-        if (parsed.answer == currentQuestion.answer) {
-          handleCorrectAnswer(ws)
-        } else {
-          handleWrongAnswer(ws)
-        }
-      }
-      break
-    case 'chat':
-      sendChatMessage(ws, parsed.message)
-      break
-    case 'ping':
-      sendPong(ws)
-      break
-    default:
-      throw new Error('Unhandled Message')
+      if (!currentQuestion || client.answered) return
+      if (parsed.answer == currentQuestion.answer) return handleCorrectAnswer(client)
+      return handleWrongAnswer(client)
+    case 'chat': return sendChatMessage(client, parsed.message)
+    case 'ping': return sendPong(client)
+    default: throw new Error(`Unhandled Message: ${msg} `)
   }
 }
 
-wss.on('connection', (ws) => {
-  configureNewClient(ws)
-  sendId(ws)
+websocket.on('connection', (client) => {
+  configureNewClient(client)
+  sendId(client)
   sendPlayerData()
-  ws.on('message', (msg) => handleIncoming(ws, msg))
-  ws.on('close', () => {
+  client.on('message', (msg) => handleIncoming(client, msg))
+  client.on('close', () => {
     sendPlayerData()
   })
 })
@@ -231,11 +229,11 @@ wss.on('connection', (ws) => {
 const startGame = () => {
   sendPlayerData()
   handleRounds()
-  questionTimer = setInterval(handleRounds, options.duration.round * 1000)
+  roundInterval = setInterval(handleRounds, options.duration.round * 1000)
 }
 
 setTimeout(startGame, options.duration.startup * 1000)
 
 app.use(express.static('public'))
 
-server.listen(3000, () => console.log(`Lisening on port :3000`))
+server.listen(3000, () => console.log(`Lisening on port: 3000`))

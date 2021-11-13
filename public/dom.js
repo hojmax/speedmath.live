@@ -54,18 +54,16 @@ const updateTable = (players) => {
     const maxPlayersShown = 6
     const clientIndex = players.findIndex(e => e.id === id)
     const isShown = clientIndex < maxPlayersShown
-    const limit = players.length <= maxPlayersShown ? players.length :
-        isShown ? maxPlayersShown : maxPlayersShown - 1
+    const limit = Math.min(players.length, isShown ? maxPlayersShown : maxPlayersShown - 1)
     clearTable()
     for (let i = 0; i < limit; i++) {
         const e = players[i]
         addRow(e.name, e.score, e.deltaScore, i, id === e.id)
     }
     if (players.length > maxPlayersShown) tripleDotRow()
-    if (!isShown) {
-        const e = players[clientIndex]
-        addRow(e.name, e.score, e.deltaScore, clientIndex, id === e.id)
-    }
+    if (isShown) return
+    const e = players[clientIndex]
+    addRow(e.name, e.score, e.deltaScore, clientIndex, id === e.id)
 }
 
 const updatePlayerCount = (players) => {
@@ -102,25 +100,34 @@ const switchPodiumAndGame = (data) => {
     setTimeout(fireConfetti, 2000)
 }
 
+const clearPodium = () => {
+    const ids = ['first-place', 'second-place', 'third-place']
+    ids.forEach((id) => {
+        document.getElementById(id).children[1].innerHTML = ''
+        document.getElementById(id).children[2].innerHTML = ''
+        document.getElementById(id).children[3].innerHTML = ''
+    })
+}
+
 const populatePodium = (data) => {
     const ids = ['first-place', 'second-place', 'third-place']
-    for (let i = 0; i < data.players.length; i++) {
-        const player = data.players[i]
+    data.players.forEach((player, i) => {
         document.getElementById(ids[i]).children[1].innerText = player.name
         document.getElementById(ids[i]).children[2].innerHTML = `<strong>${player.score}</strong> points`
         document.getElementById(ids[i]).children[3].innerText = `${player.correctRounds} out of ${data.totalRounds}`
-    }
+    })
 }
 
 const handlePodium = (data) => {
     setTimer(data)
+    clearPodium()
     populatePodium(data)
     switchPodiumAndGame(data)
 }
 
 
 const fireConfetti = () => {
-    const rect = document.getElementById('first-place').getBoundingClientRect();
+    const rect = document.getElementById('first-place').getBoundingClientRect()
     confetti({
         particleCount: 100,
         startVelocity: 25,
@@ -146,10 +153,9 @@ const handleAnswer = (data) => {
     element.style.animation = 'none'
     element.offsetHeight
     element.style.animation = data.correct ? 'correct 0.5s ease' : 'incorrect 0.5s ease'
-    if (data.correct) {
-        answered = true
-        element.value = ''
-    }
+    if (!data.correct) return
+    answered = true
+    element.value = ''
 }
 
 const currentTimeString = () => {
@@ -180,35 +186,35 @@ const chatMessage = (data, server = false, addTime = false) => {
     messageContainer.append(messageContent)
     // DOM
     element.append(messageContainer)
-    const scrollDiv = document.getElementById('scroll-container');
-    scrollDiv.scrollTop = scrollDiv.scrollHeight;
+    const scrollDiv = document.getElementById('scroll-container')
+    scrollDiv.scrollTop = scrollDiv.scrollHeight
 }
 
 const updateQuestion = (data) => {
-    if (data.type === 'add') return updateQuestionDOM(`${data.num1} + ${data.num2}`)
-    if (data.type === 'sub') return updateQuestionDOM(`${data.num1} - ${data.num2}`)
-    if (data.type === 'mult') return updateQuestionDOM(`${data.num1} × ${data.num2}`)
-    if (data.type === 'div') return updateQuestionDOM(`${data.num1} / ${data.num2}`)
+    switch (data.type) {
+        case 'add': return updateQuestionDOM(`${data.num1} + ${data.num2}`)
+        case 'sub': return updateQuestionDOM(`${data.num1} - ${data.num2}`)
+        case 'mult': return updateQuestionDOM(`${data.num1} × ${data.num2}`)
+        case 'div': return updateQuestionDOM(`${data.num1} / ${data.num2}`)
+        case 'pow': return updateQuestionDOM(`${data.num1}²`)
+    }
 }
 
 const setup = () => {
     document.getElementById('input').addEventListener('keydown', (event) => {
-        if (event.key === 'Enter' && event.target.value) {
-            sendAnswer(event.target.value)
-        }
+        if (event.key !== 'Enter' || !event.target.value) return
+        sendAnswer(event.target.value)
     })
     document.getElementById('chat-input').addEventListener('keydown', (event) => {
-        if (event.key === 'Enter' && event.target.value) {
-            sendChatMessage(event.target.value)
-            event.target.value = ''
-        }
+        if (event.key !== 'Enter' || !event.target.value) return
+        sendChatMessage(event.target.value)
+        event.target.value = ''
     })
     document.getElementById('chat-button').addEventListener('click', (event) => {
         const element = document.getElementById('chat-input')
-        if (element.value) {
-            sendChatMessage(element.value)
-            element.value = ''
-        }
+        if (!element.value) return
+        sendChatMessage(element.value)
+        element.value = ''
     })
 }
 

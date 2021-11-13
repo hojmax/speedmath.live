@@ -15,11 +15,15 @@
         "max": 1000
     },
     "number": {
-        "smaller": {
+        "small": {
             "min": 2,
             "max": 25
         },
-        "larger": {
+        "medium": {
+            "min": 11,
+            "max": 25
+        },
+        "large": {
             "min": 1,
             "max": 150
         }

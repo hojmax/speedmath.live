@@ -3,59 +3,45 @@ let id
 let playerData
 let answered = false
 let recievedPong = true
-let pingInterval;
+let pingInterval
 
 const handleMessage = (msg) => {
     const resp = JSON.parse(msg.data)
     switch (resp.type) {
-        case 'playerData':
-            if (playerData) {
-                animateTable()
-            }
-            playerData = resp.data
-            updateTable(playerData)
-            updatePlayerCount(playerData)
-            break
-        case 'mathQuestion':
-            answered = false
-            setTimer(resp.data)
-            updateQuestion(resp.data)
-            updateRoundCounter(resp.data)
-            resetDeltaScore(playerData)
-            updateTable(playerData)
-            break
-        case 'id':
-            id = resp.data.id
-            break
-        case 'answer':
-            handleAnswer(resp.data)
-            break
-        case 'podium':
-            handlePodium(resp.data)
-            break
-        case 'chat':
-            chatMessage(resp.data)
-            break
-        case 'pong':
-            recievedPong = true
-            break
-        case 'rate-limit-kick':
-            messageToUser('You have been disconnected for sending too many requests.')
-            break
-        default:
-            throw new Error('Unhandled Message')
+        case 'playerData': return handlePlayerData(resp.data)
+        case 'question': return handleQuestion(resp.data)
+        case 'answer': return handleAnswer(resp.data)
+        case 'podium': return handlePodium(resp.data)
+        case 'chat': return chatMessage(resp.data)
+        case 'id': return id = resp.data.id
+        case 'pong': return recievedPong = true
+        case 'rate-limit-kick': return messageToUser('You have been disconnected for sending too many requests.')
+        default: throw new Error(`Unhandled Message: ${msg}`)
     }
 }
 
+const handleQuestion = (data) => {
+    answered = false
+    setTimer(data)
+    updateQuestion(data)
+    updateRoundCounter(data)
+    resetDeltaScore(playerData)
+    updateTable(playerData)
+}
+
+const handlePlayerData = (data) => {
+    if (playerData) animateTable()
+    playerData = data
+    updateTable(playerData)
+    updatePlayerCount(playerData)
+}
+
 const resetDeltaScore = (data) => {
-    for (const e of data) {
-        e.deltaScore = 0
-    }
+    data.forEach(e => e.deltaScore = 0)
 }
 
 const sendAnswer = (answer) => {
     if (answered) return
-
     socket.send(JSON.stringify({
         type: 'answer',
         answer: answer
