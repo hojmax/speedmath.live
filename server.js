@@ -252,6 +252,5 @@ const startGame = () => {
 setTimeout(startGame, options.duration.startup * 1000)
 
 app.use(express.static(path.join(__dirname, 'public')))
-console.log(__dirname + '/public')
 
 server.listen(options.port, () => console.log(`Lisening on port: ${options.port}`))
