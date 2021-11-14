@@ -8,6 +8,7 @@ const { v4: uuidv4 } = require('uuid')
 const WebSocket = require('ws')
 const websocket = new WebSocket.Server({ server: server })
 const options = require('./options.json')
+const path = require('path')
 let showingPodium = false
 let roundInterval
 let roundCounter = 0
@@ -250,6 +251,6 @@ const startGame = () => {
 
 setTimeout(startGame, options.duration.startup * 1000)
 
-app.use(express.static('./public'))
+app.use('/static', express.static(path.join(__dirname, 'public')))
 
 server.listen(options.port, () => console.log(`Lisening on port: ${options.port}`))
