@@ -2,12 +2,12 @@
 const express = require('express')
 const app = express()
 const server = require('http').createServer(app)
-const mathQuestionGenerator = require('./math.js')
-const nameGenerator = require('./nameGenerator.js')
+const mathQuestionGenerator = require('./server/math.js')
+const nameGenerator = require('./server/nameGenerator.js')
 const { v4: uuidv4 } = require('uuid')
 const WebSocket = require('ws')
 const websocket = new WebSocket.Server({ server: server })
-const options = require('./options.json')
+const options = require('./server/options.json')
 const path = require('path')
 let showingPodium = false
 let roundInterval
@@ -251,6 +251,7 @@ const startGame = () => {
 
 setTimeout(startGame, options.duration.startup * 1000)
 
-app.use('/static', express.static(path.join(__dirname, 'public')))
+app.use(express.static(path.join(__dirname, 'public')))
+console.log(__dirname + '/public')
 
 server.listen(options.port, () => console.log(`Lisening on port: ${options.port}`))
