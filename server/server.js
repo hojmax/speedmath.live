@@ -238,9 +238,7 @@ websocket.on('connection', (client) => {
   sendPlayerData()
   sendTiming(client)
   client.on('message', (msg) => handleIncoming(client, msg))
-  client.on('close', () => {
-    sendPlayerData()
-  })
+  client.on('close', sendPlayerData)
 })
 
 const startGame = () => {
