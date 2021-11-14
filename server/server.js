@@ -250,6 +250,6 @@ const startGame = () => {
 
 setTimeout(startGame, options.duration.startup * 1000)
 
-app.use(express.static('public'))
+app.use(express.static('./online_math/public'))
 
 server.listen(options.port, () => console.log(`Lisening on port: ${options.port}`))
