@@ -1,7 +1,8 @@
 {
+    "port": 8080,
     "isDebugging": false,
     "totalRounds": 10,
-    "rateLimit": 15,
+    "rateLimit": 10,
     "duration": {
         "startup": 3,
         "round": 5,

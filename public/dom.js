@@ -178,7 +178,7 @@ const chatMessage = (data, server = false, addTime = false) => {
     // Name
     const messageSender = document.createElement('div')
     messageSender.className = 'message-sender' + serverClassName
-    messageSender.append(`${data.name}:`)
+    messageSender.innerHTML = `<strong>${data.name}</strong>:`
     messageContainer.append(messageSender)
     // Content
     const messageContent = document.createElement('div')

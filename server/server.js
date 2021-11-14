@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 const express = require('express')
 const app = express()
 const server = require('http').createServer(app)
@@ -235,6 +236,7 @@ websocket.on('connection', (client) => {
   configureNewClient(client)
   sendId(client)
   sendPlayerData()
+  sendTiming(client)
   client.on('message', (msg) => handleIncoming(client, msg))
   client.on('close', () => {
     sendPlayerData()
@@ -252,4 +254,4 @@ setTimeout(startGame, options.duration.startup * 1000)
 
 app.use(express.static('public'))
 
-server.listen(3000, () => console.log(`Lisening on port: 3000`))
+server.listen(options.port, () => console.log(`Lisening on port: ${options.port}`))

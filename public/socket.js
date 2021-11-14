@@ -1,4 +1,4 @@
-const socket = new WebSocket('ws://localhost:3000')
+const socket = new WebSocket('ws://speedmath.live')
 let id
 let playerData
 let answered = false
@@ -91,7 +91,6 @@ const startPingPong = () => {
 }
 
 socket.addEventListener('error', connectionError)
-
 socket.addEventListener('message', handleMessage)
 
 startPingPong()
